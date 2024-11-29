@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  foreignKey,
   index,
   integer,
   pgTableCreator,
@@ -10,12 +11,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
 export const createTable = pgTableCreator((name) => `blaze_${name}`);
 
 export const posts = createTable(
@@ -30,13 +25,13 @@ export const posts = createTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
+      () => new Date(),
     ),
   },
   (example) => ({
     createdByIdIdx: index("created_by_idx").on(example.createdById),
     nameIndex: index("name_idx").on(example.name),
-  })
+  }),
 );
 
 export const users = createTable("user", {
@@ -51,6 +46,10 @@ export const users = createTable("user", {
     withTimezone: true,
   }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
+  posts: integer("posts").default(0),
+  followers: integer("followers").default(0),
+  following: integer("following").default(0),
+  bio: text("bio"),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -83,7 +82,7 @@ export const accounts = createTable(
       columns: [account.provider, account.providerAccountId],
     }),
     userIdIdx: index("account_user_id_idx").on(account.userId),
-  })
+  }),
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -106,7 +105,7 @@ export const sessions = createTable(
   },
   (session) => ({
     userIdIdx: index("session_user_id_idx").on(session.userId),
-  })
+  }),
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -125,5 +124,120 @@ export const verificationTokens = createTable(
   },
   (vt) => ({
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-  })
+  }),
 );
+
+export const post = createTable("post", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  name: varchar("name", { length: 256 }),
+  createdById: varchar("created_by", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+    () => new Date(),
+  ),
+  likes: integer("likes").default(0),
+  comments: integer("comments").default(0),
+  reposts: integer("reposts").default(0),
+});
+
+export const postRelations = relations(post, ({ one }) => ({
+  createdBy: one(users, { fields: [post.createdById], references: [users.id] }),
+}));
+
+export const comment = createTable(
+  "comment",
+  {
+    id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+    postId: integer("post_id")
+      .notNull()
+      .references(() => post.id),
+    userId: varchar("user_id", { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    parentCommentId: integer("parent_comment_id"),
+    text: text("text"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date(),
+    ),
+    likes: integer("likes").default(0),
+    comments: integer("comments").default(0),
+  },
+  (table) => ({
+    parentCommentRefrence: foreignKey({
+      columns: [table.parentCommentId],
+      foreignColumns: [table.id],
+      name: "comment_parent_comment_id_fk",
+    }),
+  }),
+);
+
+export const commentRelations = relations(comment, ({ one }) => ({
+  post: one(post, { fields: [comment.postId], references: [post.id] }),
+  user: one(users, { fields: [comment.userId], references: [users.id] }),
+  parentComment: one(comment, {
+    fields: [comment.parentCommentId],
+    references: [comment.id],
+  }),
+  childComments: one(comment, {
+    fields: [comment.id],
+    references: [comment.parentCommentId],
+  }),
+}));
+
+export const like = createTable("like", {
+  postId: integer("post_id")
+    .notNull()
+    .references(() => post.id),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+export const likeRelations = relations(like, ({ one }) => ({
+  post: one(post, { fields: [like.postId], references: [post.id] }),
+  user: one(users, { fields: [like.userId], references: [users.id] }),
+}));
+
+export const repost = createTable("repost", {
+  postId: integer("post_id")
+    .notNull()
+    .references(() => post.id),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+export const repostRelations = relations(repost, ({ one }) => ({
+  post: one(post, { fields: [repost.postId], references: [post.id] }),
+  user: one(users, { fields: [repost.userId], references: [users.id] }),
+}));
+
+export const follow = createTable("follow", {
+  followerId: varchar("follower_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  followingId: varchar("following_id", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+});
+
+export const followRelations = relations(follow, ({ one }) => ({
+  follower: one(users, { fields: [follow.followerId], references: [users.id] }),
+  following: one(users, {
+    fields: [follow.followingId],
+    references: [users.id],
+  }),
+}));
