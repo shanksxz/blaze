@@ -1,0 +1,30 @@
+import { Bell, Flame, Home, Mail } from 'lucide-react';
+import { Button } from '~/components/ui/button';
+import { auth } from '~/server/auth';
+import NavDropDown from './NavDropDown';
+
+export async function Navbar() {
+	const session = await auth();
+	return (
+		<header className="sticky top-0 z-50 bg-background border-b">
+			<div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+				<Flame className="w-8 h-8" />
+				<nav className="hidden md:flex space-x-4">
+					<Button variant="ghost">
+						<Home className="w-5 h-5 mr-2" />
+						Home
+					</Button>
+					<Button variant="ghost">
+						<Bell className="w-5 h-5 mr-2" />
+						Notifications
+					</Button>
+					<Button variant="ghost">
+						<Mail className="w-5 h-5 mr-2" />
+						Messages
+					</Button>
+				</nav>
+				<NavDropDown user={session?.user} />
+			</div>
+		</header>
+	);
+}
