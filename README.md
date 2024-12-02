@@ -1,29 +1,31 @@
-# Create T3 App
+# Blaze 🔥
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Blaze is a modern, open-source social media platform designed to revolutionize real-time communication and connection. Built with cutting-edge technologies, Blaze offers a lightning-fast, intuitive experience for sharing thoughts, connecting with others, and staying informed.
 
-## What's next? How do I make an app with this?
+## Key Features
+- Real-time messaging
+- User profiles
+- Post/message sharing
+- Lightweight and scalable architecture
+- Advanced privacy controls
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Tech Stack
+- Next.js
+- tRPC
+- Shadcn/UI
+- Drizzle ORM
+- NextAuth
+- TailwindCSS
+- Biome (Linter/Formatter)
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Getting Started
+1. Clone the repository
+2. Install dependencies
+3. Set up environment variables
+4. Run the application
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Contributing
+We welcome contributions! Please read our CONTRIBUTING.md for details on our code of conduct and the process for submitting pull requests.
 
-## Learn More
-
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
