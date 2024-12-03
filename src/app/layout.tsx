@@ -6,14 +6,17 @@ import Providers from '~/providers/providers';
 import { TRPCReactProvider } from '~/trpc/react';
 
 export const metadata: Metadata = {
-	title: "Blaze",
+	title: 'Blaze',
 	description:
-		"Blaze is a social media platform designed to revolutionize real-time communication and connection.",
+		'Blaze is a social media platform designed to revolutionize real-time communication and connection.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="en" className={`${GeistSans.variable}`}>
+			<head>
+				<script src="https://unpkg.com/react-scan/dist/auto.global.js" async />
+			</head>
 			<body>
 				<Providers>
 					<TRPCReactProvider>{children}</TRPCReactProvider>

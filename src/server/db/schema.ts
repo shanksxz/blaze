@@ -120,7 +120,7 @@ export const post = createTable('post', {
 export const postRelations = relations(post, ({ one, many }) => ({
 	createdBy: one(users, { fields: [post.createdById], references: [users.id] }),
 	likes: many(like),
-	reposts: many(repost)
+	reposts: many(repost),
 }));
 
 export const comment = createTable(
