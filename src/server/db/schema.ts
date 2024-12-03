@@ -183,6 +183,7 @@ export const likeRelations = relations(like, ({ one }) => ({
 }));
 
 export const repost = createTable('repost', {
+	id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
 	postId: integer('post_id')
 		.notNull()
 		.references(() => post.id),
@@ -200,6 +201,7 @@ export const repostRelations = relations(repost, ({ one }) => ({
 }));
 
 export const follow = createTable('follow', {
+	id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
 	followerId: varchar('follower_id', { length: 255 })
 		.notNull()
 		.references(() => users.id),
