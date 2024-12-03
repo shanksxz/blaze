@@ -104,7 +104,7 @@ export const verificationTokens = createTable(
 
 export const post = createTable('post', {
 	id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
-	name: varchar('name', { length: 256 }),
+	content: varchar('content', { length: 256 }),
 	createdById: varchar('created_by', { length: 255 })
 		.notNull()
 		.references(() => users.id),
@@ -117,8 +117,10 @@ export const post = createTable('post', {
 	reposts: integer('reposts').default(0),
 });
 
-export const postRelations = relations(post, ({ one }) => ({
+export const postRelations = relations(post, ({ one, many }) => ({
 	createdBy: one(users, { fields: [post.createdById], references: [users.id] }),
+	likes: many(like),
+	reposts: many(repost)
 }));
 
 export const comment = createTable(
@@ -163,6 +165,7 @@ export const commentRelations = relations(comment, ({ one }) => ({
 }));
 
 export const like = createTable('like', {
+	id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
 	postId: integer('post_id')
 		.notNull()
 		.references(() => post.id),
