@@ -1,0 +1,1 @@
+ALTER TABLE "blaze_user" ADD COLUMN "username" varchar(255);

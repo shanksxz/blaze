@@ -30,6 +30,7 @@ export const postRouter = createTRPCRouter({
 					columns: {
 						name: true,
 						image: true,
+						username: true,
 					},
 				},
 				likes: true,
@@ -56,6 +57,7 @@ export const postRouter = createTRPCRouter({
 					columns: {
 						name: true,
 						image: true,
+						username: true,
 					},
 				},
 				likes: true,

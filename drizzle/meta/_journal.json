@@ -29,6 +29,13 @@
       "when": 1733209625617,
       "tag": "0003_dry_living_tribunal",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1733239190152,
+      "tag": "0004_known_king_bedlam",
+      "breakpoints": true
     }
   ]
 }

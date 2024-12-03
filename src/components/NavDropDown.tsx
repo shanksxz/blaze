@@ -3,6 +3,7 @@
 import { LogIn, LogOut, User } from 'lucide-react';
 import type { Session } from 'next-auth';
 import { signIn, signOut } from 'next-auth/react';
+import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import {
@@ -43,7 +44,7 @@ export default function NavDropDown({ user }: { user: Session['user'] | undefine
 				<DropdownMenuSeparator />
 				<DropdownMenuItem>
 					<User className="mr-2 h-4 w-4" />
-					<span>Profile</span>
+					<Link href={`profile/${user.username}`}>Profile</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem onClick={() => signOut()}>
 					<LogOut className="mr-2 h-4 w-4" />

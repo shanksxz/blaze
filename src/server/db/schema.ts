@@ -20,6 +20,7 @@ export const users = createTable('user', {
 		.$defaultFn(() => crypto.randomUUID()),
 	name: varchar('name', { length: 255 }),
 	email: varchar('email', { length: 255 }).notNull(),
+	username: varchar('username', { length: 255 }),
 	emailVerified: timestamp('email_verified', {
 		mode: 'date',
 		withTimezone: true,
@@ -33,6 +34,11 @@ export const users = createTable('user', {
 
 export const usersRelations = relations(users, ({ many }) => ({
 	accounts: many(accounts),
+	posts: many(post),
+	likes: many(like),
+	reposts: many(repost),
+	comments: many(comment),
+	follow: many(follow),
 }));
 
 export const accounts = createTable(
@@ -121,6 +127,7 @@ export const postRelations = relations(post, ({ one, many }) => ({
 	createdBy: one(users, { fields: [post.createdById], references: [users.id] }),
 	likes: many(like),
 	reposts: many(repost),
+	comments: many(comment),
 }));
 
 export const comment = createTable(
