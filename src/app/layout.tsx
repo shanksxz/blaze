@@ -4,6 +4,7 @@ import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
 import Providers from '~/providers/providers';
 import { TRPCReactProvider } from '~/trpc/react';
+import { Toaster } from '~/components/ui/sonner';
 
 export const metadata: Metadata = {
 	title: 'Blaze',
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 			<body>
 				<Providers>
 					<TRPCReactProvider>{children}</TRPCReactProvider>
+					<Toaster />
 				</Providers>
 			</body>
 		</html>

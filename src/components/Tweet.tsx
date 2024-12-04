@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { api } from '~/trpc/react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
+import { toast } from 'sonner';
 
 const tweetSchema = z.object({
 	content: z.string().min(1, 'Content is required').max(256, 'Content is too long'),
@@ -17,6 +18,7 @@ export default function Tweet() {
 		control,
 		handleSubmit,
 		formState: { errors },
+		reset,
 	} = useForm({
 		resolver: zodResolver(tweetSchema),
 		defaultValues: {
@@ -26,13 +28,14 @@ export default function Tweet() {
 
 	const createPost = api.post.create.useMutation({
 		onSuccess: () => {
-			console.log('Post created');
+			toast.success('post has been created, refresh the page to see it.');
+			reset();
 		},
 		onError: (error) => {
 			console.error(error);
 		},
 	});
-
+	
 	const onSubmit = async (data: z.infer<typeof tweetSchema>) => {
 		createPost.mutateAsync({ content: data.content });
 	};
@@ -55,17 +58,19 @@ export default function Tweet() {
 			/>
 			<div className="flex items-center justify-between">
 				<div className="flex space-x-2">
-					<Button variant="ghost" size="icon">
+					<Button variant="ghost" size="icon" disabled>
 						<Image className="w-5 h-5" />
 					</Button>
-					<Button variant="ghost" size="icon">
+					<Button variant="ghost" size="icon" disabled>
 						<Smile className="w-5 h-5" />
 					</Button>
-					<Button variant="ghost" size="icon">
+					<Button variant="ghost" size="icon" disabled>
 						<Calendar className="w-5 h-5" />
 					</Button>
 				</div>
-				<Button type="submit">Blaze it!</Button>
+				<Button type="submit" disabled={createPost.isPending}>
+					{createPost.isPending ? 'Blazing...' : 'Blaze it!'}
+				</Button>
 			</div>
 		</form>
 	);

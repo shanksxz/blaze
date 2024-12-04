@@ -18,8 +18,8 @@ import {
 export default function NavDropDown({ user }: { user: Session['user'] | undefined }) {
 	if (!user) {
 		return (
-			<Button onClick={() => signIn()} variant="ghost" className="relative h-8 w-8 rounded-full">
-				<LogIn className="w-5 h-5" />
+			<Button onClick={() => signIn()} className="relative">
+				Login
 			</Button>
 		);
 	}
@@ -42,12 +42,12 @@ export default function NavDropDown({ user }: { user: Session['user'] | undefine
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem>
 					<Link href={`profile/${user.username}`}>
+				<DropdownMenuItem>
 						<User className="mr-2 h-4 w-4" />
 						<span>Profile</span>
-					</Link>
 				</DropdownMenuItem>
+					</Link>
 				<DropdownMenuItem onClick={() => signOut()}>
 					<LogOut className="mr-2 h-4 w-4" />
 					<span>Log out</span>
