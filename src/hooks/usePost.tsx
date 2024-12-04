@@ -1,4 +1,5 @@
 'use client';
+import { toast } from 'sonner';
 import { api } from '~/trpc/react';
 
 export function usePost() {
@@ -39,9 +40,14 @@ export function usePost() {
 
 			return { previousPosts };
 		},
-		onError: (_, __, context) => {
+		onError: (err, __, context) => {
 			if (context?.previousPosts) {
 				utils.post.getAll.setData(undefined, context.previousPosts);
+			}
+			if (err.message === 'UNAUTHORIZED') {
+				toast.error('You must be logged in to like a post.');
+			} else {
+				toast.error(`Something went wrong, ${err.message}`);
 			}
 			// if (context?.previousPost) {
 			// 	utils.post.getById.setData({ id: context.previousPost.id }, context.previousPost);
@@ -90,9 +96,14 @@ export function usePost() {
 
 			return { previousPosts };
 		},
-		onError: (_, __, context) => {
+		onError: (err, __, context) => {
 			if (context?.previousPosts) {
 				utils.post.getAll.setData(undefined, context.previousPosts);
+			}
+			if (err.message === 'UNAUTHORIZED') {
+				toast.error('You must be logged in to repost.');
+			} else {
+				toast.error(`Something went wrong, ${err.message}`);
 			}
 			// if (context?.previousPost) {
 			// 	utils.post.getById.setData({ id: context.previousPost.id }, context.previousPost);

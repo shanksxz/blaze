@@ -49,7 +49,7 @@ export function Post({ post, onLike, onRepost, isLikeLoading, isRepostLoading }:
 							<Flame className={cn('w-4 h-4 mr-1', post.hasLiked && 'text-red-500')} />
 							{post.likes}
 						</Button>
-						<Button variant="ghost" size="sm">
+						<Button variant="ghost" size="sm" disabled>
 							<Mail className="w-4 h-4 mr-1" />
 							{post.comments}
 						</Button>
