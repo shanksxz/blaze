@@ -1,19 +1,30 @@
-import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { getToken } from 'next-auth/jwt';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { env } from './env';
+
+const publicPaths = ['/', '/login'];
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
-  const isAuth = request.nextUrl.pathname.startsWith("/profile");
-  if (isAuth && !token) {
-		return NextResponse.redirect(new URL("/", request.url));
+	const token = await getToken({
+		req: request,
+		secret: env.AUTH_SECRET,
+		raw: true,
+	});
+
+	const isPublicPath = publicPaths.includes(request.nextUrl.pathname);
+
+	if (isPublicPath) {
+		return NextResponse.next();
 	}
+
+	if (!token) {
+		return NextResponse.redirect(new URL('/login', request.url));
+	}
+
 	return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/profile/:username*",
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+	matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

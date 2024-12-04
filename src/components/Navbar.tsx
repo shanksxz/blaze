@@ -1,8 +1,8 @@
 import { Bell, Flame, Home, Mail } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '~/components/ui/button';
 import { auth } from '~/server/auth';
 import NavDropDown from './NavDropDown';
-import Link from 'next/link';
 
 export async function Navbar() {
 	const session = await auth();
@@ -10,7 +10,7 @@ export async function Navbar() {
 		<header className="sticky top-0 z-50 bg-background border-b">
 			<div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
 				<Link href="/">
-					<Flame className="w-8 h-8" color='#ff7800' />
+					<Flame className="w-8 h-8" color="#ff7800" />
 				</Link>
 				<nav className="hidden md:flex space-x-4">
 					<Link href="/">

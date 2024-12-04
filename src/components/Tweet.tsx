@@ -3,11 +3,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Calendar, Image, Smile } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { api } from '~/trpc/react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { toast } from 'sonner';
 
 const tweetSchema = z.object({
 	content: z.string().min(1, 'Content is required').max(256, 'Content is too long'),
@@ -35,7 +35,7 @@ export default function Tweet() {
 			console.error(error);
 		},
 	});
-	
+
 	const onSubmit = async (data: z.infer<typeof tweetSchema>) => {
 		createPost.mutateAsync({ content: data.content });
 	};
