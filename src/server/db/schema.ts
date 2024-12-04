@@ -35,8 +35,8 @@ export const usersRelations = relations(users, ({ many }) => ({
 	likes: many(like),
 	reposts: many(repost),
 	comments: many(comment),
-	followedBy: many(follow, { relationName: "followedBy" }),
-	following: many(follow, { relationName: "following" }),
+	followedBy: many(follow, { relationName: 'followedBy' }),
+	following: many(follow, { relationName: 'following' }),
 }));
 
 export const accounts = createTable(
@@ -211,14 +211,14 @@ export const follow = createTable('follow', {
 });
 
 export const followRelations = relations(follow, ({ one }) => ({
-	follower: one(users, { 
-		fields: [follow.followerId], 
+	follower: one(users, {
+		fields: [follow.followerId],
 		references: [users.id],
-		relationName: "following"
+		relationName: 'following',
 	}),
 	following: one(users, {
-		fields: [follow.followingId], 
+		fields: [follow.followingId],
 		references: [users.id],
-		relationName: "followedBy"
+		relationName: 'followedBy',
 	}),
 }));

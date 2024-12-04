@@ -1,13 +1,17 @@
+import FollowButton from '~/components/FollowButton';
 import PostList from '~/components/PostList';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { api } from '~/trpc/server';
-import FollowButton from '~/components/FollowButton';
 
-export default async function ProfilePage({ params }: { params: { username: string } }) {
-	const profile = await api.user.profile({ username: params.username });
-	console.log(profile);
+type tProps = Promise<{
+	username: string;
+}>;
+
+export default async function ProfilePage(props: { params: tProps }) {
+	const { username } = await props.params;
+	const profile = await api.user.profile({ username });
 	return (
 		<div className="max-w-2xl mx-auto p-4">
 			<header className="mb-8">
@@ -29,7 +33,9 @@ export default async function ProfilePage({ params }: { params: { username: stri
 				{!profile.isCurrentUser && (
 					<div className="flex gap-4 mt-4">
 						<FollowButton userId={profile.id} initialIsFollowing={profile.isFollowing} />
-						<Button variant="outline" disabled>Message</Button>
+						<Button variant="outline" disabled>
+							Message
+						</Button>
 					</div>
 				)}
 			</header>

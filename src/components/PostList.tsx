@@ -3,7 +3,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Card, CardContent, CardFooter, CardHeader } from '~/components/ui/card';
 import { api } from '~/trpc/server';
 
-export default async function PostList({ userId, context }: { userId: string, context: 'posts' | 'likes' }) {
+export default async function PostList({
+	userId,
+	context,
+}: { userId: string; context: 'posts' | 'likes' }) {
 	const posts = await api.user[context]({ userId });
 	return (
 		<div className="space-y-4 mt-4">
