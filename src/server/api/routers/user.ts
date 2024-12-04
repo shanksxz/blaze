@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq, sql, desc } from "drizzle-orm";
+import { and, eq, sql, desc, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { follow, post, users, comment, repost, like } from "~/server/db/schema";
@@ -51,6 +51,14 @@ export const userRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const user = await ctx.db.query.users.findFirst({
         where: eq(users.username, input.username),
+        with: {
+          likes: {
+            with: {
+              post: true,
+            },
+          },
+          posts: true,
+        },
       });
 
       if (!user) {
@@ -104,9 +112,13 @@ export const userRouter = createTRPCRouter({
           id: post.id,
           content: post.content,
           createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
+          createdById: post.createdById,
           comments: sql<number>`count(distinct ${comment.id})`,
           reposts: sql<number>`count(distinct ${repost.id})`,
           likes: sql<number>`count(distinct ${like.id})`,
+          hasLiked: sql<boolean>`exists(select 1 from ${like} where ${like.postId} = ${post.id} and ${like.userId} = ${ctx.session.user.id})`,
+          hasReposted: sql<boolean>`exists(select 1 from ${repost} where ${repost.postId} = ${post.id} and ${repost.userId} = ${ctx.session.user.id})`,
           createdBy: {
             name: users.name,
             image: users.image,
@@ -119,7 +131,7 @@ export const userRouter = createTRPCRouter({
         .leftJoin(like, eq(like.postId, post.id))
         .leftJoin(users, eq(users.id, post.createdById))
         .where(eq(post.createdById, input.userId))
-        .groupBy(post.id, users.id, users.name, users.image, users.username)
+        .groupBy(post.id, users.id)
         .orderBy(desc(post.createdAt));
 
       return posts;
@@ -163,5 +175,38 @@ export const userRouter = createTRPCRouter({
       }
 
       return { success: true };
+    }),
+
+  likes: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const likedPosts = await ctx.db
+        .select({
+          id: post.id,
+          content: post.content,
+          createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
+          createdById: post.createdById,
+          comments: sql<number>`count(distinct ${comment.id})`,
+          reposts: sql<number>`count(distinct ${repost.id})`,
+          likes: sql<number>`count(distinct ${like.id})`,
+          hasLiked: sql<boolean>`exists(select 1 from ${like} where ${like.postId} = ${post.id} and ${like.userId} = ${ctx.session.user.id})`,
+          hasReposted: sql<boolean>`exists(select 1 from ${repost} where ${repost.postId} = ${post.id} and ${repost.userId} = ${ctx.session.user.id})`,
+          createdBy: {
+            name: users.name,
+            image: users.image,
+            username: users.username,
+          },
+        })
+        .from(post)
+        .leftJoin(comment, eq(comment.postId, post.id))
+        .leftJoin(repost, eq(repost.postId, post.id))
+        .leftJoin(like, eq(like.postId, post.id))
+        .leftJoin(users, eq(users.id, post.createdById))
+        .where(eq(like.userId, input.userId))
+        .groupBy(post.id, users.id)
+        .orderBy(desc(post.createdAt));
+
+      return likedPosts;
     }),
 });

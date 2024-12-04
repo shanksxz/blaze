@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { api } from '~/trpc/react';
@@ -13,10 +14,13 @@ export default function FollowButton({ userId, initialIsFollowing = false }: Fol
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const utils = api.useUtils();
   
+  const router = useRouter();
+
   const toggleFollow = api.user.toggleFollow.useMutation({
     onSuccess: () => {
       setIsFollowing(!isFollowing);
       utils.user.profile.invalidate();
+      router.refresh();
     },
   });
 

@@ -29,7 +29,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
 				{!profile.isCurrentUser && (
 					<div className="flex gap-4 mt-4">
 						<FollowButton userId={profile.id} initialIsFollowing={profile.isFollowing} />
-						<Button variant="outline">Message</Button>
+						<Button variant="outline" disabled>Message</Button>
 					</div>
 				)}
 			</header>
@@ -38,7 +38,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
 					<TabsTrigger value="sparks" className="flex-1">
 						Sparks
 					</TabsTrigger>
-					<TabsTrigger value="replies" className="flex-1">
+					<TabsTrigger value="replies" disabled className="flex-1">
 						Replies
 					</TabsTrigger>
 					<TabsTrigger value="likes" className="flex-1">
@@ -46,13 +46,13 @@ export default async function ProfilePage({ params }: { params: { username: stri
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value="sparks">
-					<PostList userId={profile.id} />
+					<PostList userId={profile.id} context="posts" />
 				</TabsContent>
 				<TabsContent value="replies">
 					<p className="text-center py-8 text-gray-500">Replies will be displayed here</p>
 				</TabsContent>
 				<TabsContent value="likes">
-					<p className="text-center py-8 text-gray-500">Likes will be displayed here</p>
+					<PostList userId={profile.id} context="likes" />
 				</TabsContent>
 			</Tabs>
 		</div>
