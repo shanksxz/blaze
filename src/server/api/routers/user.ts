@@ -1,8 +1,8 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, sql, desc } from "drizzle-orm";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { follow, post, users } from "~/server/db/schema";
+import { follow, post, users, comment, repost, like } from "~/server/db/schema";
 
 export const userRouter = createTRPCRouter({
   setup: protectedProcedure
@@ -60,11 +60,23 @@ export const userRouter = createTRPCRouter({
         });
       }
 
+      const followerCount = await ctx.db
+        .select({ count: sql<number>`count(*)` })
+        .from(follow)
+        .where(eq(follow.followingId, user.id));
+
+      const followingCount = await ctx.db
+        .select({ count: sql<number>`count(*)` })
+        .from(follow)
+        .where(eq(follow.followerId, user.id));
+
       if (ctx.session.user.id === user.id) {
         return {
           ...user,
           isCurrentUser: true,
           isFollowing: false,
+          followers: followerCount[0]?.count ?? 0,
+          following: followingCount[0]?.count ?? 0,
         };
       }
 
@@ -79,24 +91,36 @@ export const userRouter = createTRPCRouter({
         ...user,
         isCurrentUser: ctx.session.user.id === user.id,
         isFollowing: !!followRecord,
+        followers: followerCount[0]?.count ?? 0,
+        following: followingCount[0]?.count ?? 0,
       };
     }),
 
   posts: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const posts = await ctx.db.query.post.findMany({
-        where: eq(post.createdById, input.userId),
-        with: {
+      const posts = await ctx.db
+        .select({
+          id: post.id,
+          content: post.content,
+          createdAt: post.createdAt,
+          comments: sql<number>`count(distinct ${comment.id})`,
+          reposts: sql<number>`count(distinct ${repost.id})`,
+          likes: sql<number>`count(distinct ${like.id})`,
           createdBy: {
-            columns: {
-              name: true,
-              image: true,
-              username: true,
-            },
+            name: users.name,
+            image: users.image,
+            username: users.username,
           },
-        },
-      });
+        })
+        .from(post)
+        .leftJoin(comment, eq(comment.postId, post.id))
+        .leftJoin(repost, eq(repost.postId, post.id))
+        .leftJoin(like, eq(like.postId, post.id))
+        .leftJoin(users, eq(users.id, post.createdById))
+        .where(eq(post.createdById, input.userId))
+        .groupBy(post.id, users.id, users.name, users.image, users.username)
+        .orderBy(desc(post.createdAt));
 
       return posts;
     }),
@@ -131,11 +155,6 @@ export const userRouter = createTRPCRouter({
 
       if (existing) {
         await ctx.db.delete(follow).where(eq(follow.id, existing.id));
-        // update follower count
-        await ctx.db
-          .update(users)
-          .set({ followers: sql<number>`${users.followers} - 1` })
-          .where(eq(users.id, input.userId));
       } else {
         await ctx.db.insert(follow).values({
           followerId: ctx.session.user.id,
@@ -145,6 +164,4 @@ export const userRouter = createTRPCRouter({
 
       return { success: true };
     }),
-
-	
 });

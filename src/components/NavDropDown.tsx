@@ -43,8 +43,10 @@ export default function NavDropDown({ user }: { user: Session['user'] | undefine
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem>
-					<User className="mr-2 h-4 w-4" />
-					<Link href={`profile/${user.username}`}>Profile</Link>
+					<Link href={`profile/${user.username}`}>
+						<User className="mr-2 h-4 w-4" />
+						<span>Profile</span>
+					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem onClick={() => signOut()}>
 					<LogOut className="mr-2 h-4 w-4" />

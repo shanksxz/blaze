@@ -1,0 +1,659 @@
+{
+  "id": "33aec316-d75d-41aa-8cb2-c23a85219e9f",
+  "prevId": "10a8090f-c4e9-4eca-b71f-431265d27e20",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.blaze_account": {
+      "name": "blaze_account",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider": {
+          "name": "provider",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_account_id": {
+          "name": "provider_account_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "token_type": {
+          "name": "token_type",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope": {
+          "name": "scope",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_token": {
+          "name": "id_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "session_state": {
+          "name": "session_state",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "account_user_id_idx": {
+          "name": "account_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "blaze_account_user_id_blaze_user_id_fk": {
+          "name": "blaze_account_user_id_blaze_user_id_fk",
+          "tableFrom": "blaze_account",
+          "tableTo": "blaze_user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "blaze_account_provider_provider_account_id_pk": {
+          "name": "blaze_account_provider_provider_account_id_pk",
+          "columns": [
+            "provider",
+            "provider_account_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.blaze_comment": {
+      "name": "blaze_comment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "blaze_comment_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "post_id": {
+          "name": "post_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_comment_id": {
+          "name": "parent_comment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "blaze_comment_post_id_blaze_post_id_fk": {
+          "name": "blaze_comment_post_id_blaze_post_id_fk",
+          "tableFrom": "blaze_comment",
+          "tableTo": "blaze_post",
+          "columnsFrom": [
+            "post_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "blaze_comment_user_id_blaze_user_id_fk": {
+          "name": "blaze_comment_user_id_blaze_user_id_fk",
+          "tableFrom": "blaze_comment",
+          "tableTo": "blaze_user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "comment_parent_comment_id_fk": {
+          "name": "comment_parent_comment_id_fk",
+          "tableFrom": "blaze_comment",
+          "tableTo": "blaze_comment",
+          "columnsFrom": [
+            "parent_comment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.blaze_follow": {
+      "name": "blaze_follow",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "blaze_follow_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "follower_id": {
+          "name": "follower_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "following_id": {
+          "name": "following_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "blaze_follow_follower_id_blaze_user_id_fk": {
+          "name": "blaze_follow_follower_id_blaze_user_id_fk",
+          "tableFrom": "blaze_follow",
+          "tableTo": "blaze_user",
+          "columnsFrom": [
+            "follower_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "blaze_follow_following_id_blaze_user_id_fk": {
+          "name": "blaze_follow_following_id_blaze_user_id_fk",
+          "tableFrom": "blaze_follow",
+          "tableTo": "blaze_user",
+          "columnsFrom": [
+            "following_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.blaze_like": {
+      "name": "blaze_like",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "blaze_like_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "post_id": {
+          "name": "post_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "blaze_like_post_id_blaze_post_id_fk": {
+          "name": "blaze_like_post_id_blaze_post_id_fk",
+          "tableFrom": "blaze_like",
+          "tableTo": "blaze_post",
+          "columnsFrom": [
+            "post_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "blaze_like_user_id_blaze_user_id_fk": {
+          "name": "blaze_like_user_id_blaze_user_id_fk",
+          "tableFrom": "blaze_like",
+          "tableTo": "blaze_user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.blaze_post": {
+      "name": "blaze_post",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "blaze_post_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "content": {
+          "name": "content",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "blaze_post_created_by_blaze_user_id_fk": {
+          "name": "blaze_post_created_by_blaze_user_id_fk",
+          "tableFrom": "blaze_post",
+          "tableTo": "blaze_user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.blaze_repost": {
+      "name": "blaze_repost",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "blaze_repost_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "post_id": {
+          "name": "post_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "blaze_repost_post_id_blaze_post_id_fk": {
+          "name": "blaze_repost_post_id_blaze_post_id_fk",
+          "tableFrom": "blaze_repost",
+          "tableTo": "blaze_post",
+          "columnsFrom": [
+            "post_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "blaze_repost_user_id_blaze_user_id_fk": {
+          "name": "blaze_repost_user_id_blaze_user_id_fk",
+          "tableFrom": "blaze_repost",
+          "tableTo": "blaze_user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.blaze_session": {
+      "name": "blaze_session",
+      "schema": "",
+      "columns": {
+        "session_token": {
+          "name": "session_token",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "session_user_id_idx": {
+          "name": "session_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "blaze_session_user_id_blaze_user_id_fk": {
+          "name": "blaze_session_user_id_blaze_user_id_fk",
+          "tableFrom": "blaze_session",
+          "tableTo": "blaze_user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.blaze_user": {
+      "name": "blaze_user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "image": {
+          "name": "image",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bio": {
+          "name": "bio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.blaze_verification_token": {
+      "name": "blaze_verification_token",
+      "schema": "",
+      "columns": {
+        "identifier": {
+          "name": "identifier",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "blaze_verification_token_identifier_token_pk": {
+          "name": "blaze_verification_token_identifier_token_pk",
+          "columns": [
+            "identifier",
+            "token"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

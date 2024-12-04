@@ -13,12 +13,12 @@ export default async function PostList({ userId }: { userId: string }) {
 					<CardHeader>
 						<div className="flex items-center gap-2">
 							<Avatar className="w-10 h-10">
-								<AvatarImage src={post.createdBy.image ?? ''} alt={post.createdBy.name ?? ''} />
-								<AvatarFallback>{post.createdBy.name?.slice(0, 2) ?? ''}</AvatarFallback>
+								<AvatarImage src={post.createdBy?.image ?? ''} alt={post.createdBy?.name ?? ''} />
+								<AvatarFallback>{post.createdBy?.name?.slice(0, 2) ?? ''}</AvatarFallback>
 							</Avatar>
 							<div>
-								<p className="font-semibold">{post.createdBy.name}</p>
-								<p className="text-sm text-gray-500">@{post.createdBy.username}</p>
+								<p className="font-semibold">{post.createdBy?.name}</p>
+								<p className="text-sm text-gray-500">@{post.createdBy?.username}</p>
 							</div>
 						</div>
 					</CardHeader>

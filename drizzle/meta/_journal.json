@@ -36,6 +36,13 @@
       "when": 1733239190152,
       "tag": "0004_known_king_bedlam",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1733320026825,
+      "tag": "0005_steady_nemesis",
+      "breakpoints": true
     }
   ]
 }

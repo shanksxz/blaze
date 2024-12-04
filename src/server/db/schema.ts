@@ -26,9 +26,6 @@ export const users = createTable('user', {
 		withTimezone: true,
 	}).default(sql`CURRENT_TIMESTAMP`),
 	image: varchar('image', { length: 255 }),
-	posts: integer('posts').default(0),
-	followers: integer('followers').default(0),
-	following: integer('following').default(0),
 	bio: text('bio'),
 });
 
@@ -118,9 +115,6 @@ export const post = createTable('post', {
 		.default(sql`CURRENT_TIMESTAMP`)
 		.notNull(),
 	updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(() => new Date()),
-	likes: integer('likes').default(0),
-	comments: integer('comments').default(0),
-	reposts: integer('reposts').default(0),
 });
 
 export const postRelations = relations(post, ({ one, many }) => ({
@@ -146,8 +140,6 @@ export const comment = createTable(
 			.default(sql`CURRENT_TIMESTAMP`)
 			.notNull(),
 		updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(() => new Date()),
-		likes: integer('likes').default(0),
-		comments: integer('comments').default(0),
 	},
 	(table) => ({
 		parentCommentRefrence: foreignKey({
