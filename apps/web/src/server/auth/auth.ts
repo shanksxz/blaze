@@ -1,6 +1,6 @@
 import { env } from "@/env.js";
 import { accounts, db, sessions, users, verifications } from "@repo/database";
-import { betterAuth } from "better-auth";
+import { betterAuth, BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 export const auth = betterAuth({
@@ -22,6 +22,15 @@ export const auth = betterAuth({
 			clientSecret: env.GITHUB_SECRET,
 		},
 	},
-});
+	user: {
+		additionalFields: {
+			username: {
+				type: "string",
+				unique: true,
+			}
+		}
+	}
+} satisfies BetterAuthOptions);
 
 export type Session = typeof auth.$Infer.Session;
+

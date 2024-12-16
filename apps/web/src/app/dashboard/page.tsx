@@ -8,7 +8,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { auth } from "@/server/auth";
+import { auth } from "@/server/auth/auth";
 import { headers } from "next/headers";
 import Link from "next/link";
 
