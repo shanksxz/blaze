@@ -1,21 +1,38 @@
 "use client";
 
-import { Flame, Mail, MoreHorizontal, User } from 'lucide-react';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import type { RouterOutputs } from '@/trpc/react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { usePost } from "@/app/hooks/usePost";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import type { RouterOutputs } from "@/trpc/react";
+import { Flame, Mail, MoreHorizontal, Repeat2, User } from "lucide-react";
+import Link from "next/link";
 
-type Post = RouterOutputs['post']['getLatest'];
+type Post = RouterOutputs["post"]["getLatest"];
 
-export function Post({ post }: { post: Post[number] }) {
+export function Post({
+	post,
+	userId,
+}: { post: Post[number]; userId?: string }) {
+	const {
+		hasLiked,
+		hasReposted,
+		isTogglingLike,
+		isTogglingRepost,
+		toggleLike,
+		toggleRepost,
+	} = usePost({ post, userId });
+
 	if (!post || !post.createdById || !post.createdBy) return null;
+
 	return (
 		<div className="border rounded-lg p-4">
 			<div className="flex items-start space-x-3">
 				<Avatar>
-					<AvatarImage src={`${post.createdBy.image || ''}`} alt={`User ${post.createdBy.name}`} />
+					<AvatarImage
+						src={`${post.createdBy.image || ""}`}
+						alt={`User ${post.createdBy.name}`}
+					/>
 					<AvatarFallback>{post.createdBy.name}</AvatarFallback>
 				</Avatar>
 				<div className="flex-1">
@@ -26,7 +43,10 @@ export function Post({ post }: { post: Post[number] }) {
 								href={`profile/${post.createdBy.username}`}
 								className="text-muted-foreground ml-2"
 							>
-								@<span className="hover:underline">{post.createdBy.username}</span>
+								@
+								<span className="hover:underline">
+									{post.createdBy.username}
+								</span>
 							</Link>
 						</div>
 						<Button variant="ghost" size="icon">
@@ -38,22 +58,28 @@ export function Post({ post }: { post: Post[number] }) {
 						<Button
 							variant="ghost"
 							size="sm"
-							disabled
+							onClick={toggleLike}
+							disabled={isTogglingLike}
 						>
-							<Flame className={cn('w-4 h-4 mr-1')} />
-							{/* {post.likes} */}
+							<Flame
+								className={cn("w-4 h-4 mr-1", hasLiked && "text-red-500")}
+							/>
+							{post.likes}
 						</Button>
 						<Button variant="ghost" size="sm" disabled>
 							<Mail className="w-4 h-4 mr-1" />
-							{/* {post.comments} */}
+							{post.comments}
 						</Button>
 						<Button
 							variant="ghost"
 							size="sm"
-							disabled
+							onClick={toggleRepost}
+							disabled={isTogglingRepost}
 						>
-							<User className={cn('w-4 h-4 mr-1')} />
-							{/* {post.reposts} */}
+							<Repeat2
+								className={cn("w-4 h-4 mr-1", hasReposted && "text-green-500")}
+							/>
+							{post.reposts}
 						</Button>
 					</div>
 				</div>

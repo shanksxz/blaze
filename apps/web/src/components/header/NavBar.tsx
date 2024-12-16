@@ -1,9 +1,9 @@
-import { Bell, Flame, Home, Mail } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { auth } from '@/server/auth/auth';
-import NavDropDown from '@/components/header/NavDropDown';
-import { headers } from 'next/headers';
+import NavDropDown from "@/components/header/NavDropDown";
+import { Button } from "@/components/ui/button";
+import { auth } from "@/server/auth/auth";
+import { Bell, Flame, Home, Mail } from "lucide-react";
+import { headers } from "next/headers";
+import Link from "next/link";
 
 export async function Navbar() {
 	const session = await auth.api.getSession({

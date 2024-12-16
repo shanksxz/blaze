@@ -1,19 +1,16 @@
 "use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Calendar, Image, Smile } from 'lucide-react';
-import { Controller, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import { api } from '@/trpc/react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { TweetSchema, tweetSchema } from '@/validation';
-
-export default function Tweet({ isAuthenticated }: {
-    isAuthenticated: boolean;
-}) {
-
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { authClient } from "@/server/auth/auth-client";
+import { api } from "@/trpc/react";
+import { type TweetSchema, tweetSchema } from "@/validation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Calendar, Image, Smile } from "lucide-react";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type { z } from "zod";
+export default function Tweet() {
 	const {
 		control,
 		handleSubmit,
@@ -22,14 +19,15 @@ export default function Tweet({ isAuthenticated }: {
 	} = useForm<TweetSchema>({
 		resolver: zodResolver(tweetSchema),
 		defaultValues: {
-			content: '',
+			content: "",
 		},
 	});
 
+	const { data: session } = authClient.useSession();
 	const utils = api.useUtils();
 	const createPost = api.post.create.useMutation({
 		onSuccess: () => {
-			toast.success('post has been created.');
+			toast.success("post has been created.");
 			utils.post.getLatest.invalidate();
 			reset();
 		},
@@ -39,11 +37,15 @@ export default function Tweet({ isAuthenticated }: {
 	});
 
 	const onSubmit = async (data: z.infer<typeof tweetSchema>) => {
+		if (!session?.user) return;
 		createPost.mutateAsync({ content: data.content });
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className="border rounded-lg p-4 mb-6">
+		<form
+			onSubmit={handleSubmit(onSubmit)}
+			className="border rounded-lg p-4 mb-6"
+		>
 			<Controller
 				name="content"
 				control={control}
@@ -54,7 +56,9 @@ export default function Tweet({ isAuthenticated }: {
 							placeholder="What's happening?"
 							className="w-full mb-4 resize-none focus:ring-0"
 						/>
-						{errors.content && <p className="text-red-500">{errors.content.message}</p>}
+						{errors.content && (
+							<p className="text-red-500">{errors.content.message}</p>
+						)}
 					</>
 				)}
 			/>
@@ -70,8 +74,8 @@ export default function Tweet({ isAuthenticated }: {
 						<Calendar className="w-5 h-5" />
 					</Button>
 				</div>
-				<Button type="submit" disabled={!isAuthenticated || createPost.isPending}>
-					{createPost.isPending ? 'Blazing...' : 'Blaze it!'}
+				<Button type="submit" disabled={!session?.user || createPost.isPending}>
+					{createPost.isPending ? "Blazing..." : "Blaze it!"}
 				</Button>
 			</div>
 		</form>

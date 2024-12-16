@@ -1,13 +1,19 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { api } from '@/trpc/react';
-import { SetupSchema, setupSchema } from '@/validation';
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { api } from "@/trpc/react";
+import { type SetupSchema, setupSchema } from "@/validation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 export default function Page() {
 	const {
@@ -34,7 +40,9 @@ export default function Page() {
 			<Card className="w-full max-w-md">
 				<CardHeader>
 					<CardTitle className="text-2xl font-bold">Enter Username</CardTitle>
-					<CardDescription>Please provide your desired username below.</CardDescription>
+					<CardDescription>
+						Please provide your desired username below.
+					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -52,10 +60,12 @@ export default function Page() {
 								autoCapitalize="none"
 								autoComplete="username"
 								autoCorrect="off"
-								{...register('username')}
+								{...register("username")}
 							/>
 							{errors.username && (
-								<p className="text-red-500">{errors.username.message?.toString()}</p>
+								<p className="text-red-500">
+									{errors.username.message?.toString()}
+								</p>
 							)}
 						</div>
 						<Button type="submit" className="w-full">
