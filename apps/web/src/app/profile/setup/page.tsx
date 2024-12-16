@@ -2,51 +2,31 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { api } from '@/trpc/react';
-import { authClient } from '@/server/auth/auth-client';
-
-const schema = z.object({
-	username: z.string().min(3, 'Username must be at least 3 characters long'),
-});
-
-type FormData = z.infer<typeof schema>;
+import { SetupSchema, setupSchema } from '@/validation';
 
 export default function Page() {
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<FormData>({
-		resolver: zodResolver(schema),
+	} = useForm<SetupSchema>({
+		resolver: zodResolver(setupSchema),
 	});
 
 	const router = useRouter();
-	const { data: session } = authClient.useSession();
 
-
-	useEffect(() => {
-		if (session?.user?.username) {
-			// router.push('/');
-		}
-	}, [session, router]);
-
-	// const { mutateAsync: setup, isSuccess } = api.user.setup.useMutation({
-	// 	onSuccess: (data) => {
-	// 		router.push(`/profile/${data?.username}`);
-	// 	},
-	// });
-	const onSubmit = async (data: FormData) => {
-        console.log(data);
-		// await setup(data);
-		// if (isSuccess) {
-		// 	console.log('success');
-		// }
+	const { mutateAsync: setup } = api.user.setup.useMutation({
+		onSuccess: (data) => {
+			router.push(`/profile/${data?.username}`);
+		},
+	});
+	const onSubmit = async (data: SetupSchema) => {
+		await setup(data);
 	};
 
 	return (

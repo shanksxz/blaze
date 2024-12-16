@@ -19,17 +19,17 @@ import { authClient } from '@/server/auth/auth-client';
 
 export default function NavDropDown({ user }: { user: Session['user'] | undefined }) {
 
+    const router = useRouter();
+    const [pending, setPending] = useState(false);
+
     if (!user) {
         return (
-            <Button className="relative">
+            <Button className="relative" onClick={() => router.push('/signin')}>
                 Login
             </Button>
         );
     }
 
-
-    const router = useRouter();
-    const [pending, setPending] = useState(false);
 
     const handleSignOut = async () => {
         try {

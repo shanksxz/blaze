@@ -1,3 +1,7 @@
 export * from "./database";
 export * from "./schema";
-export * from "drizzle-orm";
+export {
+    and,
+    eq,
+    sql,
+} from "drizzle-orm";
