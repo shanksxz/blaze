@@ -10,6 +10,7 @@ import { Calendar, Image, Smile } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
+
 export default function Tweet() {
 	const {
 		control,
@@ -27,7 +28,7 @@ export default function Tweet() {
 	const utils = api.useUtils();
 	const createPost = api.post.create.useMutation({
 		onSuccess: () => {
-			toast.success("post has been created.");
+			toast.success("Post has been created.");
 			utils.post.getLatest.invalidate();
 			reset();
 		},
