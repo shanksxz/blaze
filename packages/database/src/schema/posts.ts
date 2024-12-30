@@ -1,16 +1,12 @@
 import { relations, sql } from "drizzle-orm";
-import { pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
-// import { comments } from "./comments";
-// import { postLikes } from "./likes";
-// import { reposts } from "./reposts";
-import { comments } from "./comments";
-import { postLikes } from "./likes";
-import { reposts } from "./reposts";
-import { users } from "./users";
+import { integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { comments, postLikes, reposts, users } from "./index";
 
 export const posts = pgTable("posts", {
 	id: serial("id").primaryKey(),
 	content: varchar("content", { length: 256 }),
+	commentCount: integer("comment_counts").default(0).notNull(),
+	likesCount: integer("likes_count").default(0).notNull(),
 	createdById: varchar("created_by", { length: 255 })
 		.notNull()
 		.references(() => users.id),
@@ -34,7 +30,7 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
 	reposts: many(reposts, {
 		relationName: "reposts",
 	}),
-	comments: many(comments, {
+	postComments: many(comments, {
 		relationName: "postComments",
 	}),
 }));

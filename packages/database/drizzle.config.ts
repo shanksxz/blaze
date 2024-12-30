@@ -11,7 +11,7 @@ const getEnvVar = (name: string): string => {
 };
 
 export default defineConfig({
-  schema: "./src/schema/*",
+  schema: "./src/schema/index.ts",
   dialect: "postgresql",
   dbCredentials: {
     url: getEnvVar("DATABASE_URL"),

@@ -1,14 +1,12 @@
 import { relations, sql } from "drizzle-orm";
 import {
-    integer,
-    pgTable,
-    serial,
-    timestamp,
-    varchar,
+	integer,
+	pgTable,
+	serial,
+	timestamp,
+	varchar,
 } from "drizzle-orm/pg-core";
-import { comments } from "./comments";
-import { posts } from "./posts";
-import { users } from "./users";
+import { comments, posts, users } from "./index";
 
 export const postLikes = pgTable("post_likes", {
 	id: serial("id").primaryKey(),

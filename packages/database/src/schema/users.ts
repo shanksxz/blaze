@@ -1,16 +1,20 @@
 import { relations } from "drizzle-orm";
 import {
-    boolean,
-    pgTable,
-    text,
-    timestamp,
-    unique,
-    varchar,
+	boolean,
+	pgTable,
+	text,
+	timestamp,
+	unique,
+	varchar,
 } from "drizzle-orm/pg-core";
-
-import { follows } from "./follows";
-import { posts } from "./posts";
-import { reposts } from "./reposts";
+import {
+	commentLikes,
+	comments,
+	follows,
+	postLikes,
+	posts,
+	reposts,
+} from "./index";
 
 export const users = pgTable("users", {
 	id: varchar("id", { length: 255 }).primaryKey(),
@@ -25,9 +29,11 @@ export const users = pgTable("users", {
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
-  posts: many(posts, { relationName: "author" }),
-  reposts: many(reposts, { relationName: "author" }),
-  comments: many(posts, { relationName: "author" }),
+	posts: many(posts, { relationName: "author" }),
+	reposts: many(reposts, { relationName: "author" }),
+	comments: many(comments, { relationName: "author" }),
+	postLikes: many(postLikes, { relationName: "author" }),
+	commentLikes: many(commentLikes, { relationName: "author" }),
 	followedBy: many(follows, { relationName: "followedBy" }),
 	following: many(follows, { relationName: "following" }),
 }));

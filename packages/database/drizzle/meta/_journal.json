@@ -8,6 +8,13 @@
       "when": 1735494525829,
       "tag": "0000_legal_scarecrow",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1735546862121,
+      "tag": "0001_little_sugar_man",
+      "breakpoints": true
     }
   ]
 }
