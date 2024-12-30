@@ -1,6 +1,12 @@
 import { relations, sql } from "drizzle-orm";
 import { pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
-import { comments, postLikes, reposts, users } from "./index";
+// import { comments } from "./comments";
+// import { postLikes } from "./likes";
+// import { reposts } from "./reposts";
+import { comments } from "./comments";
+import { postLikes } from "./likes";
+import { reposts } from "./reposts";
+import { users } from "./users";
 
 export const posts = pgTable("posts", {
 	id: serial("id").primaryKey(),
@@ -17,10 +23,10 @@ export const posts = pgTable("posts", {
 });
 
 export const postsRelations = relations(posts, ({ one, many }) => ({
-	createdBy: one(users, {
+	author: one(users, {
 		fields: [posts.createdById],
 		references: [users.id],
-		relationName: "createdBy",
+		relationName: "author",
 	}),
 	postLikes: many(postLikes, {
 		relationName: "postLikes",

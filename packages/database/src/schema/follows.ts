@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
-import { users } from "./index";
+import { users } from "./users";
 
 export const follows = pgTable("follows", {
 	id: integer("id").primaryKey().generatedByDefaultAsIdentity(),

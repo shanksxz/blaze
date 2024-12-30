@@ -7,13 +7,10 @@ import {
     unique,
     varchar,
 } from "drizzle-orm/pg-core";
-import {
-    commentLikes,
-    comments,
-    follows,
-    postLikes,
-    posts
-} from "./index";
+
+import { follows } from "./follows";
+import { posts } from "./posts";
+import { reposts } from "./reposts";
 
 export const users = pgTable("users", {
 	id: varchar("id", { length: 255 }).primaryKey(),
@@ -28,13 +25,9 @@ export const users = pgTable("users", {
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
-  sessions: many(sessions),
-  accounts: many(accounts),
-  verifications: many(verifications),
-  posts: many(posts, { relationName: "posts" }),
-  comments: many(comments, { relationName: "userComments" }),
-  commentLikes: many(commentLikes, { relationName: "commentLikes" }),
-  postLikes: many(postLikes, { relationName: "postLikes" }),
+  posts: many(posts, { relationName: "author" }),
+  reposts: many(reposts, { relationName: "author" }),
+  comments: many(posts, { relationName: "author" }),
 	followedBy: many(follows, { relationName: "followedBy" }),
 	following: many(follows, { relationName: "following" }),
 }));
