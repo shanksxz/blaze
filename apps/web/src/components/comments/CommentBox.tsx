@@ -1,66 +1,137 @@
+"use client";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/server/auth/auth-client";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/router";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const tweetSchema = z.object({
-  content: z.string().min(1, { message: "Content is required" }),
+const commentSchema = z.object({
+	content: z.string().min(1, { message: "Comment cannot be empty" }),
 });
 
-export function CommentBox({ postId, parentCommentId }: { postId: string; parentCommentId?: number }) {
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const form = useForm({
-    resolver: zodResolver(tweetSchema),
-    defaultValues: {
-      content: "",
-    },
-  });
-  const { reset } = form;
+export function CommentBox({
+	postId,
+	parentCommentId,
+}: {
+	postId: number;
+	parentCommentId?: number;
+}) {
+	const { data: session } = authClient.useSession();
+	const [isLoading, setIsLoading] = useState(false);
+	const form = useForm({
+		resolver: zodResolver(commentSchema),
+		defaultValues: {
+			content: "",
+		},
+	});
+	const { reset, watch } = form;
+	const content = watch("content");
 
-  const createComment = api.post.addComment.useMutation({
-    onSuccess: () => {
-      toast.success("Comment has been created.");
-      reset();
-      // Optionally, you can add a refetch here to update the comment tree
-      // api.post.getComments.invalidate({ postId: parseInt(postId) });
-    },
-    onError: (error) => {
-      console.error(error);
-      toast.error("Failed to create comment.");
-    },
-  });
+	const utils = api.useContext();
 
-  const onSubmit = async (data: z.infer<typeof tweetSchema>) => {
-    if (!session?.user) return;
-    setIsLoading(true);
-    createComment.mutateAsync({
-      text: data.content,
-      postId: parseInt(postId),
-      parentCommentId,
-    });
-    setIsLoading(false);
-  };
+	const createComment = api.post.addComment.useMutation({
+		onSuccess: () => {
+			toast.success("Comment has been created");
+			reset();
+			utils.post.getComments.invalidate({ postId });
+		},
+		onError: (error) => {
+			console.error(error);
+			toast.error("Failed to create comment");
+		},
+	});
 
-  return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <textarea
-        {...form.register("content")}
-        placeholder="Write a comment..."
-        className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <button
-        type="submit"
-        disabled={isLoading || !session?.user}
-        className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline disabled:opacity-50"
-      >
-        {isLoading ? "Creating..." : "Comment"}
-      </button>
-    </form>
-  );
+	const createChildComment = api.comment.createChildComment.useMutation({
+		onSuccess: () => {
+			toast.success("Reply has been created");
+			reset();
+			if (parentCommentId) {
+				utils.comment.getChildComments.invalidate({ parentCommentId });
+			}
+			utils.post.getComments.invalidate({ postId });
+		},
+		onError: (error) => {
+			console.error(error);
+			toast.error("Failed to create reply");
+		},
+	});
+
+	const onSubmit = async (data: z.infer<typeof commentSchema>) => {
+		if (!session?.user) return;
+		setIsLoading(true);
+		try {
+			if (parentCommentId) {
+				await createChildComment.mutateAsync({
+					content: data.content,
+					parentCommentId,
+				});
+			} else {
+				await createComment.mutateAsync({
+					content: data.content,
+					postId,
+				});
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return (
+		<form onSubmit={form.handleSubmit(onSubmit)} className="relative">
+			<div className="flex gap-4">
+				<Avatar className="h-8 w-8 ring-2 ring-background">
+					<AvatarImage
+						src={session?.user?.image || ""}
+						alt={session?.user?.name || ""}
+					/>
+					<AvatarFallback className="bg-muted">
+						{session?.user?.name?.[0]}
+					</AvatarFallback>
+				</Avatar>
+				<div className="flex-1 space-y-4">
+					<Textarea
+						{...form.register("content")}
+						placeholder={
+							parentCommentId ? "Write a reply..." : "Write a comment..."
+						}
+						className="min-h-[80px] p-2 resize-none border-0 bg-background text-sm focus-visible:ring-0"
+					/>
+					<div className="flex items-center justify-between">
+						<div className="text-xs text-muted-foreground">
+							{!session?.user && <span>Please sign in to comment</span>}
+						</div>
+						<Button
+							type="submit"
+							size="sm"
+							className="rounded-full px-4"
+							disabled={isLoading || !session?.user || !content.trim()}
+						>
+							{isLoading ? (
+								<>
+									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									{parentCommentId ? "Replying..." : "Commenting..."}
+								</>
+							) : parentCommentId ? (
+								"Reply"
+							) : (
+								"Comment"
+							)}
+						</Button>
+					</div>
+				</div>
+			</div>
+			{form.formState.errors.content && (
+				<p className="mt-2 text-sm text-destructive">
+					{form.formState.errors.content.message}
+				</p>
+			)}
+		</form>
+	);
 }

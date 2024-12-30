@@ -1,4 +1,4 @@
-import { CommentBox } from "@/components/comments/CommentBox";
+import { CommentTree } from "@/components/comments/CommentTree";
 import { Post } from "@/components/feed/Post";
 import { Card } from "@/components/ui/card";
 import { api } from "@/trpc/server";
@@ -26,7 +26,7 @@ export default async function Page(props: {
 			</div>
 			<Card className="rounded-sm">
 				<Post post={post} userId="1" />
-				<CommentBox postId={postId} />
+				<CommentTree postId={Number.parseInt(postId)} />
 			</Card>
 		</div>
 	);

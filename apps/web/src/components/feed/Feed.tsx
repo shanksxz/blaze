@@ -10,6 +10,8 @@ export default function Feed() {
 	const { data: posts } = api.post.getLatest.useQuery();
 	const { data: session } = authClient.useSession();
 
+	console.log(posts);
+
 	if (!posts) return null;
 
 	return (

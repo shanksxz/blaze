@@ -1,13 +1,13 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import {
 	and,
-	comment,
+	comments,
 	desc,
 	eq,
-	follow,
-	like,
+	follows,
+	postLikes,
 	posts,
-	repost,
+	reposts,
 	sql,
 	users,
 } from "@repo/database";
@@ -63,9 +63,14 @@ export const userRouter = createTRPCRouter({
 			const user = await ctx.db.query.users.findFirst({
 				where: eq(users.username, input.username),
 				with: {
-					likes: {
+					postLikes: {
 						with: {
 							post: true,
+						},
+					},
+					commentLikes: {
+						with: {
+							comment: true,
 						},
 					},
 					posts: true,
@@ -82,13 +87,13 @@ export const userRouter = createTRPCRouter({
 
 			const followerCount = await ctx.db
 				.select({ count: sql<number>`count(*)` })
-				.from(follow)
-				.where(eq(follow.followingId, user.id));
+				.from(follows)
+				.where(eq(follows.followingId, user.id));
 
 			const followingCount = await ctx.db
 				.select({ count: sql<number>`count(*)` })
-				.from(follow)
-				.where(eq(follow.followerId, user.id));
+				.from(follows)
+				.where(eq(follows.followerId, user.id));
 
 			if (ctx.session.user.id === user.id) {
 				return {
@@ -100,10 +105,10 @@ export const userRouter = createTRPCRouter({
 				};
 			}
 
-			const followRecord = await ctx.db.query.follow.findFirst({
+			const followRecord = await ctx.db.query.follows.findFirst({
 				where: and(
-					eq(follow.followerId, ctx.session.user.id),
-					eq(follow.followingId, user.id),
+					eq(follows.followerId, ctx.session.user.id),
+					eq(follows.followingId, user.id),
 				),
 			});
 
@@ -126,11 +131,11 @@ export const userRouter = createTRPCRouter({
 					createdAt: posts.createdAt,
 					updatedAt: posts.updatedAt,
 					createdById: posts.createdById,
-					comments: sql<number>`count(distinct ${comment.id})`,
-					reposts: sql<number>`count(distinct ${repost.id})`,
-					likes: sql<number>`count(distinct ${like.id})`,
-					hasLiked: sql<boolean>`exists(select 1 from ${like} where ${like.postId} = ${posts.id} and ${like.userId} = ${ctx.session.user.id})`,
-					hasReposted: sql<boolean>`exists(select 1 from ${repost} where ${repost.postId} = ${posts.id} and ${repost.userId} = ${ctx.session.user.id})`,
+					comments: sql<number>`count(distinct ${comments.id})`,
+					reposts: sql<number>`count(distinct ${reposts.id})`,
+					likes: sql<number>`count(distinct ${postLikes.id})`,
+					hasLiked: sql<boolean>`exists(select 1 from ${postLikes} where ${postLikes.postId} = ${posts.id} and ${postLikes.userId} = ${ctx.session.user.id})`,
+					hasReposted: sql<boolean>`exists(select 1 from ${reposts} where ${reposts.postId} = ${posts.id} and ${reposts.userId} = ${ctx.session.user.id})`,
 					createdBy: {
 						name: users.name,
 						image: users.image,
@@ -138,9 +143,9 @@ export const userRouter = createTRPCRouter({
 					},
 				})
 				.from(posts)
-				.leftJoin(comment, eq(comment.postId, posts.id))
-				.leftJoin(repost, eq(repost.postId, posts.id))
-				.leftJoin(like, eq(like.postId, posts.id))
+				.leftJoin(comments, eq(comments.postId, posts.id))
+				.leftJoin(reposts, eq(reposts.postId, posts.id))
+				.leftJoin(postLikes, eq(postLikes.postId, posts.id))
 				.leftJoin(users, eq(users.id, posts.createdById))
 				.where(eq(posts.createdById, input.userId))
 				.groupBy(posts.id, users.id)
@@ -170,17 +175,17 @@ export const userRouter = createTRPCRouter({
 				});
 			}
 
-			const existing = await ctx.db.query.follow.findFirst({
+			const existing = await ctx.db.query.follows.findFirst({
 				where: and(
-					eq(follow.followerId, ctx.session.user.id),
-					eq(follow.followingId, input.userId),
+					eq(follows.followerId, ctx.session.user.id),
+					eq(follows.followingId, input.userId),
 				),
 			});
 
 			if (existing) {
-				await ctx.db.delete(follow).where(eq(follow.id, existing.id));
+				await ctx.db.delete(follows).where(eq(follows.id, existing.id));
 			} else {
-				await ctx.db.insert(follow).values({
+				await ctx.db.insert(follows).values({
 					followerId: ctx.session.user.id,
 					followingId: input.userId,
 				});
@@ -199,11 +204,11 @@ export const userRouter = createTRPCRouter({
 					createdAt: posts.createdAt,
 					updatedAt: posts.updatedAt,
 					createdById: posts.createdById,
-					comments: sql<number>`count(distinct ${comment.id})`,
-					reposts: sql<number>`count(distinct ${repost.id})`,
-					likes: sql<number>`count(distinct ${like.id})`,
-					hasLiked: sql<boolean>`exists(select 1 from ${like} where ${like.postId} = ${posts.id} and ${like.userId} = ${ctx.session.user.id})`,
-					hasReposted: sql<boolean>`exists(select 1 from ${repost} where ${repost.postId} = ${posts.id} and ${repost.userId} = ${ctx.session.user.id})`,
+					comments: sql<number>`count(distinct ${comments.id})`,
+					reposts: sql<number>`count(distinct ${reposts.id})`,
+					likes: sql<number>`count(distinct ${postLikes.id})`,
+					hasLiked: sql<boolean>`exists(select 1 from ${postLikes} where ${postLikes.postId} = ${posts.id} and ${postLikes.userId} = ${ctx.session.user.id})`,
+					hasReposted: sql<boolean>`exists(select 1 from ${reposts} where ${reposts.postId} = ${posts.id} and ${reposts.userId} = ${ctx.session.user.id})`,
 					createdBy: {
 						name: users.name,
 						image: users.image,
@@ -211,11 +216,11 @@ export const userRouter = createTRPCRouter({
 					},
 				})
 				.from(posts)
-				.leftJoin(comment, eq(comment.postId, posts.id))
-				.leftJoin(repost, eq(repost.postId, posts.id))
-				.leftJoin(like, eq(like.postId, posts.id))
+				.leftJoin(comments, eq(comments.postId, posts.id))
+				.leftJoin(reposts, eq(reposts.postId, posts.id))
+				.leftJoin(postLikes, eq(postLikes.postId, posts.id))
 				.leftJoin(users, eq(users.id, posts.createdById))
-				.where(eq(like.userId, input.userId))
+				.where(eq(postLikes.userId, input.userId))
 				.groupBy(posts.id, users.id)
 				.orderBy(desc(posts.createdAt));
 

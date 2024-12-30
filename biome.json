@@ -16,6 +16,9 @@
 			},
 			"suspicious": {
 				"noExplicitAny": "off"
+			},
+			"a11y": {
+			  "useKeyWithClickEvents": "warn"
 			}
 		}
 	},

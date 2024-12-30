@@ -1,8 +1,8 @@
 "use client";
 
-import { usePost } from "@/app/hooks/usePost";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { usePost } from "@/hooks/usePost";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/trpc/react";
 import { Flame, Mail, MoreHorizontal, Repeat2 } from "lucide-react";
@@ -23,30 +23,27 @@ export function Post({
 		toggleRepost,
 	} = usePost({ post, userId });
 
-	if (!post || !post.createdById || !post.createdBy) return null;
+	if (!post || !post.author || !post.author) return null;
 
 	return (
 		<div className="lg p-4">
 			<div className="flex items-start space-x-3">
 				<Avatar>
 					<AvatarImage
-						src={`${post.createdBy.image || ""}`}
-						alt={`User ${post.createdBy.name}`}
+						src={`${post.author.image || ""}`}
+						alt={`User ${post.author.name}`}
 					/>
-					<AvatarFallback>{post.createdBy.name}</AvatarFallback>
+					<AvatarFallback>{post.author.name}</AvatarFallback>
 				</Avatar>
 				<div className="flex-1">
 					<div className="flex items-center justify-between">
 						<div>
-							<span className="font-semibold">{post.createdBy.name}</span>
+							<span className="font-semibold">{post.author.name}</span>
 							<Link
-								href={`profile/${post.createdBy.username}`}
+								href={`/profile/${post.author.username}`}
 								className="text-muted-foreground ml-2"
 							>
-								@
-								<span className="hover:underline">
-									{post.createdBy.username}
-								</span>
+								@<span className="hover:underline">{post.author.username}</span>
 							</Link>
 						</div>
 						<Button variant="ghost" size="icon">
