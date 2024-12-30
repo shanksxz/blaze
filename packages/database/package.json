@@ -11,16 +11,15 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^0.10.1",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.36.0",
+    "drizzle-orm": "^0.38.3",
     "pg": "^8.13.1"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/bcrypt": "^5.0.2",
     "@types/pg": "^8.11.10",
-    "drizzle-kit": "^0.27.1"
+    "drizzle-kit": "^0.30.1"
   }
 }

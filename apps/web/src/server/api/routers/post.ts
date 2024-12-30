@@ -39,7 +39,7 @@ export const postRouter = createTRPCRouter({
 			...post,
 			likes: post.likes.length,
 			reposts: post.reposts.length,
-			comments: post.comments.length,
+			commentsCount: post.comments.length,
 			hasLiked: post.likes.some(
 				(like) => like.userId === ctx.session?.user?.id,
 			),
@@ -48,6 +48,57 @@ export const postRouter = createTRPCRouter({
 			),
 		}));
 	}),
+
+	getByPostId: publicProcedure
+		.input(z.object({ postId: z.string() }))
+		.query(async ({ ctx, input }) => {
+			const post = await ctx.db.query.posts.findFirst({
+				where: eq(posts.id, Number.parseInt(input.postId)),
+				with: {
+					createdBy: {
+						columns: {
+							name: true,
+							image: true,
+							username: true,
+						},
+					},
+					likes: true,
+					reposts: true,
+					comments: {
+						with: {
+							user: {
+								columns: {
+									name: true,
+									image: true,
+									username: true,
+								},
+							},
+							childComments: true,
+						},
+					},
+				},
+			});
+
+			if (!post) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Post not found",
+				});
+			}
+
+			return {
+				...post,
+				likes: post.likes.length,
+				reposts: post.reposts.length,
+				commentsCount: post.comments.length,
+				hasLiked: post.likes.some(
+					(like) => like.userId === ctx.session?.user?.id,
+				),
+				hasReposted: post.reposts.some(
+					(repost) => repost.userId === ctx.session?.user?.id,
+				),
+			};
+		}),
 
 	toggleLike: protectedProcedure
 		.input(z.object({ postId: z.number() }))

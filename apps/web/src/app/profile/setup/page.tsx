@@ -26,7 +26,7 @@ export default function Page() {
 
 	const router = useRouter();
 
-	const { mutateAsync: setup } = api.user.setup.useMutation({
+	const { mutateAsync: setup, isPending } = api.user.setup.useMutation({
 		onSuccess: (data) => {
 			router.push(`/profile/${data?.username}`);
 		},
@@ -68,7 +68,7 @@ export default function Page() {
 								</p>
 							)}
 						</div>
-						<Button type="submit" className="w-full">
+						<Button type="submit" className="w-full" disabled={isPending}>
 							Submit
 						</Button>
 					</form>

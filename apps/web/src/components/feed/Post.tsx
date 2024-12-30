@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/trpc/react";
-import { Flame, Mail, MoreHorizontal, Repeat2, User } from "lucide-react";
+import { Flame, Mail, MoreHorizontal, Repeat2 } from "lucide-react";
 import Link from "next/link";
 
 type Post = RouterOutputs["post"]["getLatest"];
@@ -26,7 +26,7 @@ export function Post({
 	if (!post || !post.createdById || !post.createdBy) return null;
 
 	return (
-		<div className="border rounded-lg p-4">
+		<div className="lg p-4">
 			<div className="flex items-start space-x-3">
 				<Avatar>
 					<AvatarImage
@@ -58,7 +58,10 @@ export function Post({
 						<Button
 							variant="ghost"
 							size="sm"
-							onClick={toggleLike}
+							onClick={(e) => {
+								e.stopPropagation();
+								toggleLike();
+							}}
 							disabled={isTogglingLike}
 						>
 							<Flame
@@ -68,12 +71,15 @@ export function Post({
 						</Button>
 						<Button variant="ghost" size="sm" disabled>
 							<Mail className="w-4 h-4 mr-1" />
-							{post.comments}
+							{post.commentsCount}
 						</Button>
 						<Button
 							variant="ghost"
 							size="sm"
-							onClick={toggleRepost}
+							onClick={(e) => {
+								e.stopPropagation();
+								toggleRepost();
+							}}
 							disabled={isTogglingRepost}
 						>
 							<Repeat2
