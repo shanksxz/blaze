@@ -1,19 +1,19 @@
 import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure,
+    createTRPCRouter,
+    protectedProcedure,
+    publicProcedure,
 } from "@/server/api/trpc";
 import {
-	and,
-	comments,
-	countDistinct,
-	eq,
-	getISOFormatDateQuery,
-	isNull,
-	postLikes,
-	posts,
-	reposts,
-	sql,
+    and,
+    comments,
+    countDistinct,
+    eq,
+    getISOFormatDateQuery,
+    isNull,
+    postLikes,
+    posts,
+    reposts,
+    sql,
 } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -61,10 +61,10 @@ export const postRouter = createTRPCRouter({
 	}),
 
 	getByPostId: publicProcedure
-		.input(z.object({ postId: z.string() }))
+		.input(z.object({ postId: z.number() }))
 		.query(async ({ ctx, input }) => {
 			const post = await ctx.db.query.posts.findFirst({
-				where: eq(posts.id, Number.parseInt(input.postId)),
+				where: eq(posts.id, input.postId),
 				with: {
 					author: {
 						columns: {

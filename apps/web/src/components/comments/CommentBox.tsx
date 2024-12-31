@@ -34,7 +34,7 @@ export function CommentBox({
 	const { reset, watch } = form;
 	const content = watch("content");
 
-	const utils = api.useContext();
+	const utils = api.useUtils();
 
 	const createComment = api.post.addComment.useMutation({
 		onSuccess: () => {
@@ -101,7 +101,7 @@ export function CommentBox({
 						placeholder={
 							parentCommentId ? "Write a reply..." : "Write a comment..."
 						}
-						className="min-h-[80px] p-2 resize-none border-0 bg-background text-sm focus-visible:ring-0"
+						className="min-h-[80px] p-2 resize-none border bg-background text-sm focus-visible:ring-0"
 					/>
 					<div className="flex items-center justify-between">
 						<div className="text-xs text-muted-foreground">

@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { usePost } from "@/hooks/usePost";
+import { useLikePost, useRepostPost } from "@/hooks/usePost";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/trpc/react";
 import { Flame, Mail, MoreHorizontal, Repeat2 } from "lucide-react";
@@ -16,17 +16,20 @@ export function Post({
 }: { post: Post[number]; userId?: string }) {
 	const {
 		hasLiked,
-		hasReposted,
 		isTogglingLike,
-		isTogglingRepost,
 		toggleLike,
-		toggleRepost,
-	} = usePost({ post, userId });
+	} = useLikePost({ post, userId });
+
+	const {
+	  hasReposted,
+    isTogglingRepost,
+    toggleRepost,
+	} = useRepostPost({ post, userId });
 
 	if (!post || !post.author || !post.author) return null;
 
 	return (
-		<div className="lg p-4">
+		<div className="lg p-4 border">
 			<div className="flex items-start space-x-3">
 				<Avatar>
 					<AvatarImage
@@ -40,6 +43,7 @@ export function Post({
 						<div>
 							<span className="font-semibold">{post.author.name}</span>
 							<Link
+							  onClick={(e) => e.stopPropagation()}
 								href={`/profile/${post.author.username}`}
 								className="text-muted-foreground ml-2"
 							>
