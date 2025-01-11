@@ -22,6 +22,7 @@ import { Bell, BookMarked, Home, LogOut, Mail, Search, User } from "lucide-react
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 const items = [
 	{ title: "Home", url: "/", icon: Home, disabled: false },
@@ -37,7 +38,7 @@ export function AppSidebar() {
 	const { data: session } = authClient.useSession();
 	const [pending, setPending] = useState(false);
 	const router = useRouter();
-	const { state } = useSidebar();
+	const { state, isMobile } = useSidebar();
 
 	const handleSignOut = async () => {
 		try {
@@ -76,7 +77,7 @@ export function AppSidebar() {
 					))}
 				</SidebarMenu>
 			</SidebarContent>
-			{state === "expanded" && (
+			{state === "expanded" && session && (
 				<SidebarFooter className="p-2">
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -102,6 +103,11 @@ export function AppSidebar() {
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</SidebarFooter>
+			)}
+			{isMobile && !session && (
+				<Button variant="default" size="sm" onClick={() => router.push("/signin")}>
+					Sign in
+				</Button>
 			)}
 			<SidebarRail />
 		</Sidebar>
