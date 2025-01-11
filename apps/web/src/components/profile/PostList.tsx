@@ -16,7 +16,7 @@ export default async function PostList({
 	return (
 		<div className="space-y-4 mt-4">
 			{posts.map((post) => (
-				<Card key={post.id}>
+				<Card key={post.id} className="rounded-sm">
 					<CardHeader>
 						<div className="flex items-center gap-2">
 							<Avatar className="w-10 h-10">

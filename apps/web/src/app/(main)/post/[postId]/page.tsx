@@ -8,5 +8,5 @@ export default async function Page(props: {
 	params: tProps;
 }) {
 	const { postId } = await props.params;
-	return <Client postId={Number(postId)} />
+	return <Client postId={Number(postId)} />;
 }

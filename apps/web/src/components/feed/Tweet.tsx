@@ -4,65 +4,58 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/server/auth/auth-client";
 import { api } from "@/trpc/react";
-import { type TweetSchema, tweetSchema } from "@/validation";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { tweetSchema } from "@/validation";
 import { Calendar, Image, Smile } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
 import { toast } from "sonner";
-import type { z } from "zod";
 
 export default function Tweet() {
-	const {
-		control,
-		handleSubmit,
-		formState: { errors },
-		reset,
-	} = useForm<TweetSchema>({
-		resolver: zodResolver(tweetSchema),
-		defaultValues: {
-			content: "",
-		},
-	});
+	const [content, setContent] = useState("");
+	const [error, setError] = useState("");
 
 	const { data: session } = authClient.useSession();
 	const utils = api.useUtils();
+
 	const createPost = api.post.create.useMutation({
 		onSuccess: () => {
 			toast.success("Post has been created.");
 			utils.post.getLatest.invalidate();
-			reset();
+			setContent("");
+			setError("");
 		},
 		onError: (error) => {
+			toast.error("Failed to create post.");
 			console.error(error);
 		},
 	});
 
-	const onSubmit = async (data: z.infer<typeof tweetSchema>) => {
+	const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 		if (!session?.user) return;
-		createPost.mutateAsync({ content: data.content });
+
+		try {
+			const validated = tweetSchema.parse({ content });
+			createPost.mutateAsync({ content: validated.content });
+		} catch (err) {
+			if (err instanceof Error) {
+				toast.error(err.message);
+				// setError(err.message)
+			}
+		}
 	};
 
 	return (
-		<form
-			onSubmit={handleSubmit(onSubmit)}
-			className="border rounded-lg p-4 mb-6"
-		>
-			<Controller
-				name="content"
-				control={control}
-				render={({ field }) => (
-					<>
-						<Textarea
-							{...field}
-							placeholder="What's happening?"
-							className="w-full mb-4 resize-none focus:ring-0"
-						/>
-						{errors.content && (
-							<p className="text-red-500">{errors.content.message}</p>
-						)}
-					</>
-				)}
+		<form onSubmit={onSubmit} className="border rounded-lg p-4 mb-6">
+			<Textarea
+				value={content}
+				onChange={(e) => {
+					setContent(e.target.value);
+					setError(""); // Clear error when user types
+				}}
+				placeholder="What's happening?"
+				className="w-full mb-4 resize-none focus:ring-0"
 			/>
+			{error && <p className="text-red-500">{error}</p>}
 			<div className="flex items-center justify-between">
 				<div className="flex space-x-2">
 					<Button variant="ghost" size="icon" disabled>

@@ -53,6 +53,7 @@ export function CommentBox({
 			toast.success("Reply has been created");
 			reset();
 			if (parentCommentId) {
+				console.log("jdvjd", parentCommentId);
 				utils.comment.getChildComments.invalidate({ parentCommentId });
 			}
 			utils.post.getComments.invalidate({ postId });

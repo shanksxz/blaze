@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 const authRoutes = ["/sign-in", "/sign-up", "/forgot-password"];
 const protectedRoutes = ["/profile", "/settings", "/dashboard"];
-const profileSetupRoute = "/profile/setup";
+const profileSetupRoute = "/setup";
 
 export async function middleware(request: NextRequest) {
 	const pathName = request.nextUrl.pathname;
