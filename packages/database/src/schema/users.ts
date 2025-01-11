@@ -1,20 +1,6 @@
 import { relations } from "drizzle-orm";
-import {
-	boolean,
-	pgTable,
-	text,
-	timestamp,
-	unique,
-	varchar,
-} from "drizzle-orm/pg-core";
-import {
-	commentLikes,
-	comments,
-	follows,
-	postLikes,
-	posts,
-	reposts,
-} from "./index";
+import { boolean, pgTable, text, timestamp, unique, varchar } from "drizzle-orm/pg-core";
+import { commentLikes, comments, follows, postLikes, posts, reposts } from "./index";
 
 export const users = pgTable("users", {
 	id: varchar("id", { length: 255 }).primaryKey(),

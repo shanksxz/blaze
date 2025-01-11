@@ -21,9 +21,7 @@ export default async function ProfilePage(props: { params: tProps }) {
 						<AvatarFallback>{profile.name?.slice(0, 2) ?? ""}</AvatarFallback>
 					</Avatar>
 					<div>
-						<h1 className="text-2xl font-bold flex items-center gap-2">
-							{profile.name}
-						</h1>
+						<h1 className="text-2xl font-bold flex items-center gap-2">{profile.name}</h1>
 						<p className="text-gray-500">@{profile.username}</p>
 					</div>
 				</div>
@@ -34,10 +32,7 @@ export default async function ProfilePage(props: { params: tProps }) {
 				</div>
 				{!profile.isCurrentUser && (
 					<div className="flex gap-4 mt-4">
-						<FollowButton
-							userId={profile.id}
-							initialIsFollowing={profile.isFollowing}
-						/>
+						<FollowButton userId={profile.id} initialIsFollowing={profile.isFollowing} />
 						<Button variant="outline" disabled>
 							Message
 						</Button>
@@ -60,9 +55,7 @@ export default async function ProfilePage(props: { params: tProps }) {
 					<PostList userId={profile.id} context="posts" />
 				</TabsContent>
 				<TabsContent value="replies">
-					<p className="text-center py-8 text-gray-500">
-						Replies will be displayed here
-					</p>
+					<p className="text-center py-8 text-gray-500">Replies will be displayed here</p>
 				</TabsContent>
 				<TabsContent value="likes">
 					<PostList userId={profile.id} context="likes" />

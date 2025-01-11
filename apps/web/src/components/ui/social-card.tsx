@@ -1,14 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import {
-	Bookmark,
-	Heart,
-	Link as LinkIcon,
-	MessageCircle,
-	MoreHorizontal,
-	Share2,
-} from "lucide-react";
+import { Bookmark, Heart, Link as LinkIcon, MessageCircle, MoreHorizontal, Share2 } from "lucide-react";
 import { useState } from "react";
 
 interface SocialCardProps {
@@ -53,9 +46,7 @@ export function SocialCard({
 	className,
 }: SocialCardProps) {
 	const [isLiked, setIsLiked] = useState(engagement?.isLiked ?? false);
-	const [isBookmarked, setIsBookmarked] = useState(
-		engagement?.isBookmarked ?? false,
-	);
+	const [isBookmarked, setIsBookmarked] = useState(engagement?.isBookmarked ?? false);
 	const [likes, setLikes] = useState(engagement?.likes ?? 0);
 
 	const handleLike = () => {
@@ -90,9 +81,7 @@ export function SocialCard({
 								className="w-10 h-10 rounded-full ring-2 ring-white dark:ring-zinc-800"
 							/>
 							<div>
-								<h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-									{author?.name}
-								</h3>
+								<h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{author?.name}</h3>
 								<p className="text-xs text-zinc-500 dark:text-zinc-400">
 									@{author?.username} · {author?.timeAgo}
 								</p>
@@ -108,18 +97,14 @@ export function SocialCard({
 					</div>
 
 					{/* Content section */}
-					<p className="text-zinc-600 dark:text-zinc-300 mb-4">
-						{content?.text}
-					</p>
+					<p className="text-zinc-600 dark:text-zinc-300 mb-4">{content?.text}</p>
 
 					{/* Link preview */}
 					{content?.link && (
 						<div className="mb-4 rounded-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
 							<div className="p-4 bg-zinc-50 dark:bg-zinc-800/50">
 								<div className="flex items-center gap-3 mb-2">
-									<div className="p-2 bg-white dark:bg-zinc-700 rounded-xl">
-										{content.link.icon}
-									</div>
+									<div className="p-2 bg-white dark:bg-zinc-700 rounded-xl">{content.link.icon}</div>
 									<div>
 										<h4 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
 											{content.link.title}
@@ -141,17 +126,10 @@ export function SocialCard({
 								onClick={handleLike}
 								className={cn(
 									"flex items-center gap-2 text-sm transition-colors",
-									isLiked
-										? "text-rose-600"
-										: "text-zinc-500 dark:text-zinc-400 hover:text-rose-600",
+									isLiked ? "text-rose-600" : "text-zinc-500 dark:text-zinc-400 hover:text-rose-600",
 								)}
 							>
-								<Heart
-									className={cn(
-										"w-5 h-5 transition-all",
-										isLiked && "fill-current scale-110",
-									)}
-								/>
+								<Heart className={cn("w-5 h-5 transition-all", isLiked && "fill-current scale-110")} />
 								<span>{likes}</span>
 							</button>
 							<button
@@ -182,10 +160,7 @@ export function SocialCard({
 							)}
 						>
 							<Bookmark
-								className={cn(
-									"w-5 h-5 transition-transform",
-									isBookmarked && "fill-current scale-110",
-								)}
+								className={cn("w-5 h-5 transition-transform", isBookmarked && "fill-current scale-110")}
 							/>
 						</button>
 					</div>

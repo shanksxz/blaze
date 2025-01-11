@@ -3,17 +3,12 @@ import { z } from "zod";
 
 export const env = createEnv({
 	server: {
-		BETTER_AUTH_SECRET:
-			process.env.NODE_ENV === "production"
-				? z.string()
-				: z.string().optional(),
+		BETTER_AUTH_SECRET: process.env.NODE_ENV === "production" ? z.string() : z.string().optional(),
 		BETTER_AUTH_URL: z.string().url(),
 		GITHUB_ID: z.string(),
 		GITHUB_SECRET: z.string(),
 		DATABASE_URL: z.string().url(),
-		NODE_ENV: z
-			.enum(["development", "test", "production"])
-			.default("development"),
+		NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 	},
 	client: {
 		// NEXT_PUBLIC_CLIENTVAR: z.string(),

@@ -14,11 +14,7 @@ export default function Feed() {
 	return (
 		<div className="space-y-4">
 			{posts.map((post) => (
-				<div
-					key={post.id}
-					onClick={() => router.push(`/post/${post.id}`)}
-					className="cursor-pointer"
-				>
+				<div key={post.id} onClick={() => router.push(`/post/${post.id}`)} className="cursor-pointer">
 					<Post post={post} userId={session?.user?.id} />
 				</div>
 			))}

@@ -10,10 +10,7 @@ interface FollowButtonProps {
 	initialIsFollowing?: boolean;
 }
 
-export default function FollowButton({
-	userId,
-	initialIsFollowing = false,
-}: FollowButtonProps) {
+export default function FollowButton({ userId, initialIsFollowing = false }: FollowButtonProps) {
 	const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
 	const utils = api.useUtils();
 
@@ -33,11 +30,7 @@ export default function FollowButton({
 			variant={isFollowing ? "outline" : "default"}
 			disabled={toggleFollow.isPending}
 		>
-			{toggleFollow.isPending
-				? "Loading..."
-				: isFollowing
-					? "Unfollow"
-					: "Follow"}
+			{toggleFollow.isPending ? "Loading..." : isFollowing ? "Unfollow" : "Follow"}
 		</Button>
 	);
 }

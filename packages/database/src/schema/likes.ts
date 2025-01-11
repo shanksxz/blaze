@@ -1,11 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import {
-	integer,
-	pgTable,
-	serial,
-	timestamp,
-	varchar,
-} from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { comments, posts, users } from "./index";
 
 export const postLikes = pgTable("post_likes", {
@@ -16,9 +10,7 @@ export const postLikes = pgTable("post_likes", {
 	userId: varchar("user_id", { length: 255 })
 		.notNull()
 		.references(() => users.id),
-	createdAt: timestamp("created_at", { withTimezone: true })
-		.default(sql`CURRENT_TIMESTAMP`)
-		.notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
 export const postLikesRelations = relations(postLikes, ({ one }) => ({
@@ -42,9 +34,7 @@ export const commentLikes = pgTable("comment_likes", {
 	userId: varchar("user_id", { length: 255 })
 		.notNull()
 		.references(() => users.id),
-	createdAt: timestamp("created_at", { withTimezone: true })
-		.default(sql`CURRENT_TIMESTAMP`)
-		.notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
 export const commentLikesRelations = relations(commentLikes, ({ one }) => ({

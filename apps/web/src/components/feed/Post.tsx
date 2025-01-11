@@ -1,23 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { useLikePost, useRepostPost } from "@/hooks/usePost";
 import { cn } from "@/lib/utils";
 import type { RouterOutputs } from "@/trpc/react";
-import {
-	Bookmark,
-	BookmarkCheck,
-	Flame,
-	Mail,
-	Repeat2,
-	Share,
-} from "lucide-react";
+import { Bookmark, BookmarkCheck, Flame, Mail, Repeat2, Share } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
@@ -54,19 +42,12 @@ export function Post({
 			<CardHeader className="pb-4">
 				<div className="flex items-center gap-2">
 					<Avatar className="w-10 h-10">
-						<AvatarImage
-							src={post.author.image ?? ""}
-							alt={post.author.name ?? ""}
-						/>
-						<AvatarFallback>
-							{post.author?.name?.slice(0, 2) ?? ""}
-						</AvatarFallback>
+						<AvatarImage src={post.author.image ?? ""} alt={post.author.name ?? ""} />
+						<AvatarFallback>{post.author?.name?.slice(0, 2) ?? ""}</AvatarFallback>
 					</Avatar>
 					<div>
 						<p className="font-semibold">{post.author?.name}</p>
-						<p className="text-sm text-muted-foreground">
-							@{post.author?.username}
-						</p>
+						<p className="text-sm text-muted-foreground">@{post.author?.username}</p>
 					</div>
 				</div>
 			</CardHeader>
@@ -91,25 +72,13 @@ export function Post({
 								hasLiked ? "text-red-500" : "group-hover:text-red-500",
 							)}
 						/>
-						<span
-							className={cn(
-								"group-hover:text-red-500",
-								hasLiked && "text-red-500",
-							)}
-						>
+						<span className={cn("group-hover:text-red-500", hasLiked && "text-red-500")}>
 							{post.likes || 0}
 						</span>
 					</Button>
-					<Button
-						disabled
-						variant="ghost"
-						size="sm"
-						className="hover:bg-accent/10 group"
-					>
+					<Button disabled variant="ghost" size="sm" className="hover:bg-accent/10 group">
 						<Mail className="w-4 h-4 mr-1.5 group-hover:text-blue-500" />
-						<span className="group-hover:text-blue-500">
-							{post.commentsCount || 0}
-						</span>
+						<span className="group-hover:text-blue-500">{post.commentsCount || 0}</span>
 					</Button>
 					<Button
 						variant="ghost"
@@ -127,12 +96,7 @@ export function Post({
 								hasReposted ? "text-green-500" : "group-hover:text-green-500",
 							)}
 						/>
-						<span
-							className={cn(
-								"group-hover:text-green-500",
-								hasReposted && "text-green-500",
-							)}
-						>
+						<span className={cn("group-hover:text-green-500", hasReposted && "text-green-500")}>
 							{post.reposts || 0}
 						</span>
 					</Button>

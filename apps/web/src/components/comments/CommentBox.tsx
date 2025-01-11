@@ -88,20 +88,13 @@ export function CommentBox({
 		<form onSubmit={form.handleSubmit(onSubmit)} className="relative">
 			<div className="flex gap-4">
 				<Avatar className="h-8 w-8 ring-2 ring-background">
-					<AvatarImage
-						src={session?.user?.image || ""}
-						alt={session?.user?.name || ""}
-					/>
-					<AvatarFallback className="bg-muted">
-						{session?.user?.name?.[0]}
-					</AvatarFallback>
+					<AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
+					<AvatarFallback className="bg-muted">{session?.user?.name?.[0]}</AvatarFallback>
 				</Avatar>
 				<div className="flex-1 space-y-4">
 					<Textarea
 						{...form.register("content")}
-						placeholder={
-							parentCommentId ? "Write a reply..." : "Write a comment..."
-						}
+						placeholder={parentCommentId ? "Write a reply..." : "Write a comment..."}
 						className="min-h-[80px] p-2 resize-none border bg-background text-sm focus-visible:ring-0"
 					/>
 					<div className="flex items-center justify-between">
@@ -129,9 +122,7 @@ export function CommentBox({
 				</div>
 			</div>
 			{form.formState.errors.content && (
-				<p className="mt-2 text-sm text-destructive">
-					{form.formState.errors.content.message}
-				</p>
+				<p className="mt-2 text-sm text-destructive">{form.formState.errors.content.message}</p>
 			)}
 		</form>
 	);

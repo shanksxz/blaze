@@ -6,11 +6,7 @@ import { CommentBox } from "./CommentBox";
 import CommentItem from "./CommentItem";
 
 export function CommentTree({ postId }: { postId: number }) {
-	const {
-		data: comments,
-		isLoading,
-		error,
-	} = api.post.getComments.useQuery({ postId });
+	const { data: comments, isLoading, error } = api.post.getComments.useQuery({ postId });
 
 	if (isLoading) {
 		return (
@@ -21,11 +17,7 @@ export function CommentTree({ postId }: { postId: number }) {
 	}
 
 	if (error) {
-		return (
-			<div className="p-4 text-center text-sm text-muted-foreground">
-				Failed to load comments
-			</div>
-		);
+		return <div className="p-4 text-center text-sm text-muted-foreground">Failed to load comments</div>;
 	}
 
 	return (

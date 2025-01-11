@@ -1,11 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import {
-	integer,
-	pgTable,
-	serial,
-	timestamp,
-	varchar,
-} from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { posts } from "./posts";
 import { users } from "./users";
 
@@ -17,9 +11,7 @@ export const reposts = pgTable("reposts", {
 	userId: varchar("user_id", { length: 255 })
 		.notNull()
 		.references(() => users.id),
-	createdAt: timestamp("created_at", { withTimezone: true })
-		.default(sql`CURRENT_TIMESTAMP`)
-		.notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
 export const repostsRelations = relations(reposts, ({ one }) => ({

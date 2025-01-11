@@ -1,11 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import {
-	comments,
-	eq,
-	getISOFormatDateQuery,
-	posts,
-	sql,
-} from "@repo/database";
+import { comments, eq, getISOFormatDateQuery, posts, sql } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -73,9 +67,7 @@ export const commentRouter = createTRPCRouter({
 						content: comments.content,
 						parentCommentId: comments.parentCommentId,
 						depth: comments.depth,
-						createdAt: getISOFormatDateQuery(comments.createdAt).as(
-							"created_at",
-						),
+						createdAt: getISOFormatDateQuery(comments.createdAt).as("created_at"),
 						commentCounts: comments.commentCounts,
 					});
 			});

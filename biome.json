@@ -18,18 +18,14 @@
 				"noExplicitAny": "off"
 			},
 			"a11y": {
-			  "useKeyWithClickEvents": "warn"
+				"useKeyWithClickEvents": "warn"
 			}
 		}
 	},
 	"formatter": {
+		"lineWidth": 120,
+		"indentWidth": 4,
 		"enabled": true,
-		"ignore": [
-			"node_modules/*",
-			"*.config.*",
-			"*.json",
-			"tsconfig.json",
-			".turbo"
-		]
+		"ignore": ["node_modules/*", "*.config.*", "*.json", "tsconfig.json", ".turbo"]
 	}
 }

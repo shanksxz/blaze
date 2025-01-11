@@ -1,11 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import {
-    integer,
-    pgTable,
-    serial,
-    timestamp,
-    varchar,
-} from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { posts, users } from "./index";
 import { commentLikes } from "./likes";
 
@@ -21,12 +15,8 @@ export const comments = pgTable("comments", {
 	content: varchar("content", { length: 256 }).notNull(),
 	commentCounts: integer("comment_counts").default(0).notNull(),
 	depth: integer("depth").default(0).notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true })
-		.default(sql`CURRENT_TIMESTAMP`)
-		.notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-		() => new Date(),
-	),
+	createdAt: timestamp("created_at", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date()),
 });
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({

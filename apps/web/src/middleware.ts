@@ -9,20 +9,15 @@ const profileSetupRoute = "/setup";
 export async function middleware(request: NextRequest) {
 	const pathName = request.nextUrl.pathname;
 	const isAuthRoute = authRoutes.some((route) => pathName.startsWith(route));
-	const isProtectedRoute = protectedRoutes.some((route) =>
-		pathName.startsWith(route),
-	);
+	const isProtectedRoute = protectedRoutes.some((route) => pathName.startsWith(route));
 
 	try {
-		const { data: session } = await betterFetch<Session | null>(
-			"/api/auth/get-session",
-			{
-				baseURL: process.env.BETTER_AUTH_URL,
-				headers: {
-					cookie: request.headers.get("cookie") || "",
-				},
+		const { data: session } = await betterFetch<Session | null>("/api/auth/get-session", {
+			baseURL: process.env.BETTER_AUTH_URL,
+			headers: {
+				cookie: request.headers.get("cookie") || "",
 			},
-		);
+		});
 
 		if (!session) {
 			if (isProtectedRoute) {
@@ -50,7 +45,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: [
-		"/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-	],
+	matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };

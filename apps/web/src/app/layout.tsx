@@ -11,13 +11,10 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
 	title: "Blaze",
-	description:
-		"Blaze is a social media platform designed to revolutionize real-time communication and connection.",
+	description: "Blaze is a social media platform designed to revolutionize real-time communication and connection.",
 };
 
-export default function RootLayout({
-	children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="en" className={`${geistSans.variable}`}>
 			<body>

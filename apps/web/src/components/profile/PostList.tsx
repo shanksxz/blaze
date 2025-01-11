@@ -1,17 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { api } from "@/trpc/server";
 import { Heart, MessageCircle, Repeat2 } from "lucide-react";
 
-export default async function PostList({
-	userId,
-	context,
-}: { userId: string; context: "posts" | "likes" }) {
+export default async function PostList({ userId, context }: { userId: string; context: "posts" | "likes" }) {
 	const posts = await api.user[context]({ userId });
 	return (
 		<div className="space-y-4 mt-4">
@@ -20,19 +12,12 @@ export default async function PostList({
 					<CardHeader>
 						<div className="flex items-center gap-2">
 							<Avatar className="w-10 h-10">
-								<AvatarImage
-									src={post.createdBy?.image ?? ""}
-									alt={post.createdBy?.name ?? ""}
-								/>
-								<AvatarFallback>
-									{post.createdBy?.name?.slice(0, 2) ?? ""}
-								</AvatarFallback>
+								<AvatarImage src={post.createdBy?.image ?? ""} alt={post.createdBy?.name ?? ""} />
+								<AvatarFallback>{post.createdBy?.name?.slice(0, 2) ?? ""}</AvatarFallback>
 							</Avatar>
 							<div>
 								<p className="font-semibold">{post.createdBy?.name}</p>
-								<p className="text-sm text-gray-500">
-									@{post.createdBy?.username}
-								</p>
+								<p className="text-sm text-gray-500">@{post.createdBy?.username}</p>
 							</div>
 						</div>
 					</CardHeader>
