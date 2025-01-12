@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
 
 		if (!session) {
 			if (isProtectedRoute) {
-				return NextResponse.redirect(new URL("/sign-in", request.url));
+				return NextResponse.redirect(new URL("/signin", request.url));
 			}
 			if (isAuthRoute && pathName === "/") {
 				return NextResponse.next();
@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
 		return NextResponse.next();
 	} catch (error) {
 		console.error("Error in auth middleware:", error);
-		return NextResponse.redirect(new URL("/sign-in", request.url));
+		return NextResponse.redirect(new URL("/signin", request.url));
 	}
 }
 

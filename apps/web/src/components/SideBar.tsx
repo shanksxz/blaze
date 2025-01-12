@@ -104,10 +104,12 @@ export function AppSidebar() {
 					</DropdownMenu>
 				</SidebarFooter>
 			)}
-			{isMobile && !session && (
-				<Button variant="default" size="sm" onClick={() => router.push("/signin")}>
-					Sign in
-				</Button>
+			{state === "expanded" && !session && (
+				<SidebarFooter>
+					<Button variant="default" size="sm" onClick={() => router.push("/signin")}>
+						Sign in
+					</Button>
+				</SidebarFooter>
 			)}
 			<SidebarRail />
 		</Sidebar>

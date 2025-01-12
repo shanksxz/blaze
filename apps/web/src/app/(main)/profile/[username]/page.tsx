@@ -13,7 +13,7 @@ export default async function ProfilePage(props: { params: tProps }) {
 	const { username } = await props.params;
 	const profile = await api.user.profile({ username });
 	return (
-		<div className="max-w-2xl mx-auto">
+		<div className="max-w-2xl mx-auto px-4 py-6">
 			<header className="mb-8">
 				<div className="flex items-center gap-4">
 					<Avatar className="w-24 h-24">

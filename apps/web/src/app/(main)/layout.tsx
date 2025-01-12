@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<SidebarProvider defaultOpen>
+		<SidebarProvider>
 			<div className="flex min-h-screen w-full">
 				<AppSidebar />
 				<SidebarInset className="flex flex-col">
