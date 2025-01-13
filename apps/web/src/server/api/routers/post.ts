@@ -1,6 +1,7 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import {
 	and,
+	bookmarks,
 	comments,
 	countDistinct,
 	eq,
@@ -36,6 +37,7 @@ export const postRouter = createTRPCRouter({
 				postLikes: true,
 				reposts: true,
 				postComments: true,
+				bookmarks: true,
 			},
 			limit: 10,
 		});
@@ -47,6 +49,7 @@ export const postRouter = createTRPCRouter({
 			commentsCount: post.postComments.length,
 			hasLiked: post.postLikes.some((like) => like.userId === ctx.session?.user?.id),
 			hasReposted: post.reposts.some((repost) => repost.userId === ctx.session?.user?.id),
+			isBookmarked: post.bookmarks.some((bookmark) => bookmark.userId === ctx.session?.user?.id),
 		}));
 	}),
 
@@ -75,6 +78,7 @@ export const postRouter = createTRPCRouter({
 						childComments: true,
 					},
 				},
+				bookmarks: true,
 			},
 		});
 
@@ -92,6 +96,7 @@ export const postRouter = createTRPCRouter({
 			commentsCount: post.postComments.length,
 			hasLiked: post.postLikes.some((like) => like.userId === ctx.session?.user?.id),
 			hasReposted: post.reposts.some((repost) => repost.userId === ctx.session?.user?.id),
+			isBookmarked: post.bookmarks.some((bookmark) => bookmark.userId === ctx.session?.user?.id),
 		};
 	}),
 

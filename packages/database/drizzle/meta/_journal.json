@@ -15,6 +15,13 @@
       "when": 1735546862121,
       "tag": "0001_little_sugar_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1736673928232,
+      "tag": "0002_glorious_loa",
+      "breakpoints": true
     }
   ]
 }

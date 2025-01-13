@@ -18,7 +18,8 @@
 				"noExplicitAny": "off"
 			},
 			"a11y": {
-				"useKeyWithClickEvents": "warn"
+				"useKeyWithClickEvents": "warn",
+				"useFocusableInteractive": "off"
 			}
 		}
 	},

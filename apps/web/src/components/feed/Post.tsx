@@ -1,42 +1,25 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { useLikePost, useRepostPost } from "@/hooks/usePost";
 import { cn } from "@/lib/utils";
+import { authClient } from "@/server/auth/auth-client";
 import type { RouterOutputs } from "@/trpc/react";
-import { Bookmark, BookmarkCheck, Flame, Mail, Repeat2, Share } from "lucide-react";
-import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Bookmark, Flame, Mail, Repeat2, Share } from "lucide-react";
 
-type Post = RouterOutputs["post"]["getLatest"];
+type Post = RouterOutputs["post"]["getLatest"][number];
 
-export function Post({
-	post,
-	userId,
-}: {
-	post: Post[number];
-	userId?: string;
-}) {
-	const [isBookmarked, setIsBookmarked] = useState(false);
+type PostProps = {
+	post: Post;
+	onLike: (id: number) => void;
+	onRepost: (id: number) => void;
+	onBookmark: (id: number) => void;
+};
 
-	const { hasLiked, isTogglingLike, toggleLike } = useLikePost({
-		post,
-		userId,
-	});
-	const { hasReposted, isTogglingRepost, toggleRepost } = useRepostPost({
-		post,
-		userId,
-	});
-
-	if (!post || !post.author || !post.author) return null;
-
-	const handleShare = async () => {};
-
-	const toggleBookmark = () => {
-		setIsBookmarked(!isBookmarked);
-	};
-
+export function Post({ post, onLike, onRepost, onBookmark }: PostProps) {
+	if (!post || !post.author) return null;
+	const { data: session } = authClient.useSession();
 	return (
 		<Card className="border-border rounded-sm hover:bg-accent/5 transition-colors">
 			<CardHeader className="pb-4">
@@ -62,17 +45,17 @@ export function Post({
 						className="hover:bg-accent/10 group"
 						onClick={(e) => {
 							e.stopPropagation();
-							toggleLike();
+							onLike(post.id);
 						}}
-						disabled={isTogglingLike}
+						disabled={!session?.user}
 					>
 						<Flame
 							className={cn(
 								"w-4 h-4 mr-1.5 transition-colors",
-								hasLiked ? "text-red-500" : "group-hover:text-red-500",
+								post.hasLiked ? "text-red-500" : "group-hover:text-red-500",
 							)}
 						/>
-						<span className={cn("group-hover:text-red-500", hasLiked && "text-red-500")}>
+						<span className={cn("group-hover:text-red-500", post.hasLiked && "text-red-500")}>
 							{post.likes || 0}
 						</span>
 					</Button>
@@ -86,17 +69,17 @@ export function Post({
 						className="hover:bg-accent/10 group"
 						onClick={(e) => {
 							e.stopPropagation();
-							toggleRepost();
+							onRepost(post.id);
 						}}
-						disabled={isTogglingRepost}
+						disabled={!session?.user}
 					>
 						<Repeat2
 							className={cn(
 								"w-4 h-4 mr-1.5 transition-colors",
-								hasReposted ? "text-green-500" : "group-hover:text-green-500",
+								post.hasReposted ? "text-green-500" : "group-hover:text-green-500",
 							)}
 						/>
-						<span className={cn("group-hover:text-green-500", hasReposted && "text-green-500")}>
+						<span className={cn("group-hover:text-green-500", post.hasReposted && "text-green-500")}>
 							{post.reposts || 0}
 						</span>
 					</Button>
@@ -108,26 +91,21 @@ export function Post({
 							className="hover:bg-accent/10 group"
 							onClick={(e) => {
 								e.stopPropagation();
-								handleShare();
 							}}
 						>
 							<Share className="w-4 h-4 group-hover:text-blue-500" />
 						</Button>
 						<Button
-							disabled
 							variant="ghost"
 							size="sm"
 							className="hover:bg-accent/10 group"
 							onClick={(e) => {
 								e.stopPropagation();
-								toggleBookmark();
+								onBookmark(post.id);
 							}}
+							disabled={!session?.user}
 						>
-							{isBookmarked ? (
-								<BookmarkCheck className="w-4 h-4 text-blue-500" />
-							) : (
-								<Bookmark className="w-4 h-4 group-hover:text-blue-500" />
-							)}
+							<Bookmark className={cn("h-4 w-4", post.isBookmarked ? "fill-current" : "fill-none")} />
 						</Button>
 					</div>
 				</div>

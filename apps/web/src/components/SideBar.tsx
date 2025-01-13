@@ -29,7 +29,7 @@ const items = [
 	{ title: "Explore", url: "/explore", icon: Search, disabled: true },
 	{ title: "Notifications", url: "/notifications", icon: Bell, disabled: true },
 	{ title: "Messages", url: "/messages", icon: Mail, disabled: true },
-	{ title: "Bookmarks", url: "/bookmarks", icon: BookMarked, disabled: true },
+	{ title: "Bookmarks", url: "/bookmarks", icon: BookMarked, disabled: false },
 	{ title: "Profile", url: "/profile", icon: User, disabled: false },
 ];
 
@@ -38,7 +38,7 @@ export function AppSidebar() {
 	const { data: session } = authClient.useSession();
 	const [pending, setPending] = useState(false);
 	const router = useRouter();
-	const { state, isMobile } = useSidebar();
+	const { state } = useSidebar();
 
 	const handleSignOut = async () => {
 		try {

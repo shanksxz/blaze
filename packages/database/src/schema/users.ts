@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { boolean, pgTable, text, timestamp, unique, varchar } from "drizzle-orm/pg-core";
-import { commentLikes, comments, follows, postLikes, posts, reposts } from "./index";
+import { commentLikes, comments, follows, postLikes, posts, reposts, bookmarks } from "./index";
 
 export const users = pgTable("users", {
 	id: varchar("id", { length: 255 }).primaryKey(),
@@ -22,6 +22,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 	commentLikes: many(commentLikes, { relationName: "author" }),
 	followedBy: many(follows, { relationName: "followedBy" }),
 	following: many(follows, { relationName: "following" }),
+	bookmarks: many(bookmarks, { relationName: "authorBookmarks" }),
 }));
 
 export const sessions = pgTable("sessions", {
