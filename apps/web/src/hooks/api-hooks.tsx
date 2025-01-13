@@ -21,10 +21,12 @@ export function useLikePost() {
 	return api.post.toggleLike.useMutation({
 		onMutate: async ({ postId }) => {
 			await utils.post.getByPostId.cancel({ postId });
+			await utils.bookmark.getBookmarkedPosts.cancel();
 
 			const prevData = {
 				post: utils.post.getByPostId.getData({ postId }),
 				posts: utils.post.getLatest.getData(),
+				bookmarkPosts: utils.bookmark.getBookmarkedPosts.getData(),
 			};
 
 			utils.post.getByPostId.setData({ postId }, (old) => {
@@ -44,6 +46,22 @@ export function useLikePost() {
 				});
 			});
 
+			utils.bookmark.getBookmarkedPosts.setData(undefined, (old) => {
+        if (!old) return old;
+        const post = old.find((p) => p.id === postId);
+        if (post) {
+          return old.map((p) => {
+            if (p.id === postId) {
+              return produce(p, (draft) => {
+                updatePostAction(draft, "like");
+              });
+            }
+            return p;
+          });
+        }
+        return old;
+      });
+
 			return prevData;
 		},
 		onError: (_err, { postId }, context) => {
@@ -53,11 +71,15 @@ export function useLikePost() {
 			if (context?.posts) {
 				utils.post.getLatest.setData(undefined, context.posts);
 			}
+			if (context?.bookmarkPosts) {
+        utils.bookmark.getBookmarkedPosts.setData(undefined, context.bookmarkPosts);
+      }
 			toast.error("Failed to like post");
 		},
 		onSettled: async (_data, _error, variables) => {
 			await utils.post.getByPostId.invalidate({ postId: variables.postId });
 			await utils.post.getLatest.invalidate();
+			await utils.bookmark.getBookmarkedPosts.invalidate();
 		},
 	});
 }
@@ -69,10 +91,12 @@ export function useRepostPost() {
 		onMutate: async ({ postId }) => {
 			await utils.post.getByPostId.cancel({ postId });
 			await utils.post.getLatest.cancel();
+			await utils.bookmark.getBookmarkedPosts.cancel();
 
 			const prevData = {
 				post: utils.post.getByPostId.getData({ postId }),
 				posts: utils.post.getLatest.getData(),
+				bookmarkPosts: utils.bookmark.getBookmarkedPosts.getData(),
 			};
 
 			utils.post.getByPostId.setData({ postId }, (old) => {
@@ -92,6 +116,22 @@ export function useRepostPost() {
 				});
 			});
 
+			utils.bookmark.getBookmarkedPosts.setData(undefined, (old) => {
+        if (!old) return old;
+        const post = old.find((p) => p.id === postId);
+        if (post) {
+          return old.map((p) => {
+            if (p.id === postId) {
+              return produce(p, (draft) => {
+                updatePostAction(draft, "repost");
+              });
+            }
+            return p;
+          });
+        }
+        return old;
+      });
+
 			return prevData;
 		},
 		onError: (err, { postId }, context) => {
@@ -101,11 +141,15 @@ export function useRepostPost() {
 			if (context?.posts) {
 				utils.post.getLatest.setData(undefined, context.posts);
 			}
+			if (context?.bookmarkPosts) {
+        utils.bookmark.getBookmarkedPosts.setData(undefined, context.bookmarkPosts);
+      }
 			toast.error("Failed to repost");
 		},
 		onSettled: async (_data, _error, variables) => {
 			await utils.post.getByPostId.invalidate({ postId: variables.postId });
 			await utils.post.getLatest.invalidate();
+			await utils.bookmark.getBookmarkedPosts.invalidate();
 		},
 	});
 }
@@ -162,9 +206,6 @@ export function useBookmarkPost() {
 			}
 			if (context?.posts) {
 				utils.post.getLatest.setData(undefined, context.posts);
-			}
-			if (context?.bookmarkedPosts) {
-				utils.bookmark.getBookmarkedPosts.setData(undefined, context.bookmarkedPosts);
 			}
 			toast.error("Failed to bookmark post");
 		},
