@@ -1,18 +1,21 @@
 "use client";
 
 import { Post } from "@/components/feed/Post";
-import { useBookmarkPost, useLikePost, useRepostPost } from "@/hooks/api-hooks";
+import { useBookmarkPost, useLikePost, usePostService, useRepostPost } from "@/hooks/api-hooks";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
 	const { data: bookmarkedPosts } = api.bookmark.getBookmarkedPosts.useQuery();
 	const router = useRouter();
-	const likeMutation = useLikePost();
-	const repostMutation = useRepostPost();
-	const bookmarkMutation = useBookmarkPost();
+	const {
+		likePost,
+		repostPost,
+		bookmarkPost
+	} = usePostService();
 
 	if (!bookmarkedPosts) return null;
+
 	return (
 		<main className="max-w-2xl mx-auto pt-4 px-4">
 			<div className="mb-6">
@@ -28,9 +31,9 @@ export default function Page() {
 						<div key={post.id} onClick={() => router.push(`/post/${post.id}`)} className="cursor-pointer">
 							<Post
 								post={post}
-								onLike={() => likeMutation.mutate({ postId: post.id })}
-								onRepost={() => repostMutation.mutate({ postId: post.id })}
-								onBookmark={() => bookmarkMutation.mutate({ postId: post.id })}
+								onLike={() => likePost.mutate({ postId: post.id })}
+								onRepost={() => repostPost.mutate({ postId: post.id })}
+								onBookmark={() => repostPost.mutate({ postId: post.id })}
 							/>
 						</div>
 					))

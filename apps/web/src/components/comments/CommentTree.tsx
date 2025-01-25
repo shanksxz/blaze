@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
@@ -6,31 +7,36 @@ import { CommentBox } from "./CommentBox";
 import CommentItem from "./CommentItem";
 
 export function CommentTree({ postId }: { postId: number }) {
-	const { data: comments, isLoading, error } = api.post.getComments.useQuery({ postId });
+  const { data: comments, isLoading, error } = api.post.getComments.useQuery({
+    postId,
+  });
 
-	if (isLoading) {
-		return (
-			<div className="space-y-4 p-4">
-				<Skeleton className="h-12 w-full" />
-			</div>
-		);
-	}
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-4">
+        <Skeleton className="h-12 w-full" />
+      </div>
+    );
+  }
 
-	if (error) {
-		return <div className="p-4 text-center text-sm text-muted-foreground">Failed to load comments</div>;
-	}
+  if (error) {
+    return (
+      <div className="p-4 text-center text-sm text-muted-foreground">
+        Failed to load comments
+      </div>
+    );
+  }
 
-	return (
-		<div className="divide-y divide-border">
-			<div className="p-4">
-				<h3 className="mb-4 text-lg font-semibold">Comments</h3>
-				<CommentBox postId={postId} />
-			</div>
-			<div className="space-y-6 p-4">
-				{comments?.map((comment) => (
-					<CommentItem key={comment.id} comment={comment} postId={postId} />
-				))}
-			</div>
-		</div>
-	);
+  return (
+    <div className="divide-y divide-border">
+      <div className="p-4">
+        <CommentBox postId={postId} />
+      </div>
+      <div className="space-y-4 p-4">
+        {comments?.map((comment) => (
+          <CommentItem key={comment.id} comment={comment} postId={postId} />
+        ))}
+      </div>
+    </div>
+  );
 }

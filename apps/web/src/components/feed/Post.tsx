@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { authClient } from "@/server/auth/auth-client";
 import type { RouterOutputs } from "@/trpc/react";
 import { Bookmark, Flame, Mail, Repeat2, Share } from "lucide-react";
+import Link from "next/link";
 
 type Post = RouterOutputs["post"]["getLatest"][number];
 
@@ -30,15 +31,17 @@ export function Post({ post, onLike, onRepost, onBookmark }: PostProps) {
 					</Avatar>
 					<div>
 						<p className="font-semibold">{post.author?.name}</p>
-						<p className="text-sm text-muted-foreground">@{post.author?.username}</p>
+						<Link href={`/profile/${post.author.username}`} onClick={(e) => e.stopPropagation()}>
+							<p className="text-sm text-muted-foreground hover:underline">@{post.author?.username}</p>
+						</Link>
 					</div>
 				</div>
 			</CardHeader>
 			<CardContent className="pb-4">
-				<p className="whitespace-pre-wrap break-words">{post.content}</p>
+				<p className="whitespace-pre-wrap break-words ml-2">{post.content}</p>
 			</CardContent>
 			<CardFooter className="pt-0">
-				<div className="flex items-center w-full -ml-2">
+				<div className="flex items-center w-full flex-wrap -ml-2">
 					<Button
 						variant="ghost"
 						size="sm"

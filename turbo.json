@@ -1,5 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "DATABASE_URL",
+    "GITHUB_ID",
+    "GITHUB_SECRET",
+    "BETTER_AUTH_URL",
+    "BETTER_AUTH_SECRET"
+  ],
   "ui": "tui",
   "tasks": {
     "build": {
@@ -14,15 +21,23 @@
         "DATABASE_URL"
       ]
     },
-    "lint": {
-      "dependsOn": ["^lint"]
+    "format-and-lint": {
+      "dependsOn": ["^format-and-lint"],
+      "outputs": []
     },
-    "check-types": {
-      "dependsOn": ["^check-types"]
+    "format-and-lint:fix": {
+      "dependsOn": ["^format-and-lint:fix"],
+      "outputs": []
     },
-    "dev": {
+    "db:migrate": {
+      "cache": false
+    },
+    "db:studio": {
       "cache": false,
       "persistent": true
+    },
+    "db:generate": {
+      "cache": false
     }
   }
 }

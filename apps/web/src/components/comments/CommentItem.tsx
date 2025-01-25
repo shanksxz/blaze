@@ -1,7 +1,7 @@
 "use client";
 
 import { type RouterOutputs, api } from "@/trpc/react";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle } from 'lucide-react';
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
@@ -18,6 +18,7 @@ export default function CommentItem({
 	comment: Comment;
 	postId: number;
 	isChild?: boolean;
+	hasChildComments?: boolean;
 }) {
 	const [showReply, setShowReply] = useState(false);
 	const [showChildComments, setShowChildComments] = useState(false);
@@ -92,10 +93,10 @@ export default function CommentItem({
 					) : (
 						<div className="relative">
 							<div
-								className="absolute bottom-6 left-[-32px] top-4 w-[2px] bg-border"
+								className="absolute bottom-0 left-[-32px] top-0 w-[2px] bg-border"
 								aria-hidden="true"
 							/>
-							{childComments?.map((childComment, index) => (
+							{childComments?.map((childComment) => (
 								<CommentItem key={childComment.id} comment={childComment} postId={postId} isChild />
 							))}
 						</div>

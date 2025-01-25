@@ -6,20 +6,24 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "db:migrate": "tsx scripts/migration.ts",
-    "db:studio": "drizzle-kit studio",
-    "db:generate": "drizzle-kit generate"
+    "format-and-lint": "biome check ./src",
+    "format-and-lint:fix": "biome check --write ./src",
+    "with-env": "dotenv -e ../../.env --",
+    "db:migrate": "pnpm with-env tsx scripts/migration.ts",
+    "db:studio": "pnpm with-env drizzle-kit studio",
+    "db:generate": "pnpm with-env drizzle-kit generate"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "dotenv": "^16.4.5",
     "drizzle-orm": "^0.38.3",
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@repo/typescript-config": "workspace:*",
     "@types/bcrypt": "^5.0.2",
     "@types/pg": "^8.11.10",
+    "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.30.1"
   }
 }

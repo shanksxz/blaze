@@ -47,20 +47,20 @@ export function useLikePost() {
 			});
 
 			utils.bookmark.getBookmarkedPosts.setData(undefined, (old) => {
-        if (!old) return old;
-        const post = old.find((p) => p.id === postId);
-        if (post) {
-          return old.map((p) => {
-            if (p.id === postId) {
-              return produce(p, (draft) => {
-                updatePostAction(draft, "like");
-              });
-            }
-            return p;
-          });
-        }
-        return old;
-      });
+				if (!old) return old;
+				const post = old.find((p) => p.id === postId);
+				if (post) {
+					return old.map((p) => {
+						if (p.id === postId) {
+							return produce(p, (draft) => {
+								updatePostAction(draft, "like");
+							});
+						}
+						return p;
+					});
+				}
+				return old;
+			});
 
 			return prevData;
 		},
@@ -72,8 +72,8 @@ export function useLikePost() {
 				utils.post.getLatest.setData(undefined, context.posts);
 			}
 			if (context?.bookmarkPosts) {
-        utils.bookmark.getBookmarkedPosts.setData(undefined, context.bookmarkPosts);
-      }
+				utils.bookmark.getBookmarkedPosts.setData(undefined, context.bookmarkPosts);
+			}
 			toast.error("Failed to like post");
 		},
 		onSettled: async (_data, _error, variables) => {
@@ -117,20 +117,20 @@ export function useRepostPost() {
 			});
 
 			utils.bookmark.getBookmarkedPosts.setData(undefined, (old) => {
-        if (!old) return old;
-        const post = old.find((p) => p.id === postId);
-        if (post) {
-          return old.map((p) => {
-            if (p.id === postId) {
-              return produce(p, (draft) => {
-                updatePostAction(draft, "repost");
-              });
-            }
-            return p;
-          });
-        }
-        return old;
-      });
+				if (!old) return old;
+				const post = old.find((p) => p.id === postId);
+				if (post) {
+					return old.map((p) => {
+						if (p.id === postId) {
+							return produce(p, (draft) => {
+								updatePostAction(draft, "repost");
+							});
+						}
+						return p;
+					});
+				}
+				return old;
+			});
 
 			return prevData;
 		},
@@ -142,8 +142,8 @@ export function useRepostPost() {
 				utils.post.getLatest.setData(undefined, context.posts);
 			}
 			if (context?.bookmarkPosts) {
-        utils.bookmark.getBookmarkedPosts.setData(undefined, context.bookmarkPosts);
-      }
+				utils.bookmark.getBookmarkedPosts.setData(undefined, context.bookmarkPosts);
+			}
 			toast.error("Failed to repost");
 		},
 		onSettled: async (_data, _error, variables) => {
@@ -191,11 +191,10 @@ export function useBookmarkPost() {
 				const post = old.find((p) => p.id === postId);
 				if (post) {
 					return old.filter((p) => p.id !== postId);
-				} else {
-					const newPost = utils.post.getByPostId.getData({ postId });
-					if (!newPost) return old;
-					return [...old, { ...newPost, isBookmarked: true }];
 				}
+				const newPost = utils.post.getByPostId.getData({ postId });
+				if (!newPost) return old;
+				return [...old, { ...newPost, isBookmarked: true }];
 			});
 
 			return prevData;
@@ -215,4 +214,12 @@ export function useBookmarkPost() {
 			await utils.bookmark.getBookmarkedPosts.invalidate();
 		},
 	});
+}
+
+export function usePostService() {
+	return {
+		likePost: useLikePost(),
+		repostPost: useRepostPost(),
+		bookmarkPost: useBookmarkPost(),
+	};
 }

@@ -5,10 +5,12 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "format-and-lint": "biome check .",
-    "format-and-lint:fix": "biome check . --write"
+    "format-and-lint:fix": "biome check . --write",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "husky": "^9.1.7",
     "turbo": "^2.3.3",
     "typescript": "5.5.4"
   },
