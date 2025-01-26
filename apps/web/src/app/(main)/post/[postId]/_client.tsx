@@ -1,8 +1,8 @@
 "use client";
-import { CommentTree } from "@/components/comments/CommentTree";
-import { Post } from "@/components/feed/Post";
 import { Card } from "@/components/ui/card";
-import { useBookmarkPost, useLikePost, useRepostPost } from "@/hooks/api-hooks";
+import { CommentTree } from "@/features/comments/components/comment-tree";
+import { Post } from "@/features/post/components/post-card";
+import { useBookmarkPost, useLikePost, usePostService, useRepostPost } from "@/hooks/api-hooks";
 import { api } from "@/trpc/react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -13,9 +13,7 @@ export default function Client({
 	postId: number;
 }) {
 	const { data: post } = api.post.getByPostId.useQuery({ postId });
-	const likeMutation = useLikePost();
-	const repostMutation = useRepostPost();
-	const bookmarkMutation = useBookmarkPost();
+	const { bookmarkPost, likePost, repostPost } = usePostService();
 
 	if (!post) return null;
 
@@ -30,9 +28,9 @@ export default function Client({
 			<Card className="rounded-sm">
 				<Post
 					post={post}
-					onLike={() => likeMutation.mutate({ postId })}
-					onRepost={() => repostMutation.mutate({ postId })}
-					onBookmark={() => bookmarkMutation.mutate({ postId })}
+					onLike={() => likePost.mutate({ postId })}
+					onRepost={() => repostPost.mutate({ postId })}
+					onBookmark={() => bookmarkPost.mutate({ postId })}
 				/>
 				<CommentTree postId={postId} />
 			</Card>

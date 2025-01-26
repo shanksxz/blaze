@@ -1,8 +1,8 @@
-import FollowButton from "@/components/profile/FollowButton";
-import PostList from "@/components/profile/PostList";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import FollowButton from "@/features/profile/components/follow-button";
+import PostList from "@/features/profile/components/profile-list";
 import { api } from "@/trpc/server";
 
 type tProps = Promise<{

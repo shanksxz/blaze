@@ -1,12 +1,12 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { type RouterOutputs, api } from "@/trpc/react";
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from "lucide-react";
 import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
-import { Skeleton } from "../ui/skeleton";
-import { CommentBox } from "./CommentBox";
+import { CommentBox } from "./comment-box";
 
 type Comment = RouterOutputs["comment"]["getChildComments"][number];
 

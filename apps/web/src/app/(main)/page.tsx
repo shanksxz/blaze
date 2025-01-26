@@ -1,13 +1,11 @@
-import Feed from "@/components/feed/Feed";
-import Tweet from "@/components/feed/Tweet";
+import Feed from "@/features/feed/components/feed";
+import Tweet from "@/features/feed/components/tweet";
 
 export default async function Page() {
 	return (
 		<div className="min-h-screen bg-background">
-				{/* <div className="max-w-3xl mx-auto px-2"> */}
-					<Tweet />
-					<Feed />
-				{/* </div> */}
+			<Tweet />
+			<Feed />
 		</div>
 	);
 }

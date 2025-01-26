@@ -21,6 +21,10 @@
         "DATABASE_URL"
       ]
     },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
     "format-and-lint": {
       "dependsOn": ["^format-and-lint"],
       "outputs": []

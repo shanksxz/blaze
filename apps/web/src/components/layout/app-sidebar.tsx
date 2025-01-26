@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -14,31 +15,31 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
-	SidebarRail,
 	useSidebar,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { authClient } from "@/server/auth/auth-client";
-import { Bell, BookMarked, Home, LogOut, Mail, Search, User } from "lucide-react";
+import { Bell, BookMarked, Home, LogOut, Mail, Search, Settings, User, X } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Button } from "./ui/button";
 
-const items = [
+const navigationItems = [
 	{ title: "Home", url: "/", icon: Home, disabled: false },
-	{ title: "Explore", url: "/explore", icon: Search, disabled: true },
-	{ title: "Notifications", url: "/notifications", icon: Bell, disabled: true },
-	{ title: "Messages", url: "/messages", icon: Mail, disabled: true },
+	{ title: "Explore", url: "/explore", icon: Search, disabled: false },
+	{ title: "Notifications", url: "/notifications", icon: Bell, disabled: false },
+	{ title: "Messages", url: "/messages", icon: Mail, disabled: false },
 	{ title: "Bookmarks", url: "/bookmarks", icon: BookMarked, disabled: false },
 	{ title: "Profile", url: "/profile", icon: User, disabled: false },
+	{ title: "Settings", url: "/settings", icon: Settings, disabled: false },
 ];
 
 export function AppSidebar() {
-	const pathname = usePathname();
+	const { state, isMobile, setOpenMobile } = useSidebar();
 	const { data: session } = authClient.useSession();
+	const isCollapsed = state === "collapsed";
 	const [pending, setPending] = useState(false);
 	const router = useRouter();
-	const { state } = useSidebar();
 
 	const handleSignOut = async () => {
 		try {
@@ -60,16 +61,30 @@ export function AppSidebar() {
 
 	return (
 		<Sidebar collapsible="icon" variant="inset" className="px-4 py-6">
+			{isMobile && (
+				<button
+					type="button"
+					className="absolute p-4 flex items-center justify-end w-full"
+					onClick={() => setOpenMobile(false)}
+				>
+					<X className="h-5 w-5" />
+				</button>
+			)}
 			<SidebarContent className="flex flex-col space-y-2 h-full px-4 py-10 md:p-0">
 				<SidebarMenu className="space-y-3">
-					{items.map((item) => (
-						<SidebarMenuItem key={item.title}>
-							<SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
-								<Link
-									href={item.url === "/profile" ? `/profile/${session?.user.username}` : item.url}
-									aria-disabled={item.disabled}
-								>
-									<item.icon className="size-5" />
+					{navigationItems.map((item) => (
+						<SidebarMenuItem key={item.url}>
+							<SidebarMenuButton
+								disabled={item.disabled}
+								asChild
+								className={cn(
+									"w-full justify-start",
+									item.disabled && "pointer-events-none opacity-50",
+								)}
+								tooltip={isCollapsed ? item.title : undefined}
+							>
+								<Link href={item.url} aria-disabled={item.disabled} className="flex items-center gap-2">
+									<item.icon className="h-4 w-4" />
 									<span>{item.title}</span>
 								</Link>
 							</SidebarMenuButton>
@@ -77,8 +92,9 @@ export function AppSidebar() {
 					))}
 				</SidebarMenu>
 			</SidebarContent>
-			{state === "expanded" && session && (
-				<SidebarFooter className="p-2">
+
+			<SidebarFooter className="p-2">
+				{state === "expanded" && session && (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<button
@@ -102,16 +118,19 @@ export function AppSidebar() {
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
-				</SidebarFooter>
-			)}
-			{state === "expanded" && !session && (
-				<SidebarFooter>
-					<Button variant="default" size="sm" onClick={() => router.push("/signin")}>
+				)}
+				{state === "collapsed" && session && (
+					<Avatar className="size-8">
+						<AvatarImage src={session?.user.image ?? ""} alt="@username" />
+						<AvatarFallback>{session?.user.name?.[0]}</AvatarFallback>
+					</Avatar>
+				)}
+				{!session && (
+					<Button variant="default" size="sm" className="w-full" onClick={() => router.push("/signin")}>
 						Sign in
 					</Button>
-				</SidebarFooter>
-			)}
-			<SidebarRail />
+				)}
+			</SidebarFooter>
 		</Sidebar>
 	);
 }

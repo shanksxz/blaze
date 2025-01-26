@@ -1,18 +1,14 @@
 "use client";
 
-import { Post } from "@/components/feed/Post";
-import { useBookmarkPost, useLikePost, usePostService, useRepostPost } from "@/hooks/api-hooks";
+import { Post } from "@/features/post/components/post-card";
+import { usePostService } from "@/hooks/api-hooks";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
 	const { data: bookmarkedPosts } = api.bookmark.getBookmarkedPosts.useQuery();
 	const router = useRouter();
-	const {
-		likePost,
-		repostPost,
-		bookmarkPost
-	} = usePostService();
+	const { likePost, repostPost, bookmarkPost } = usePostService();
 
 	if (!bookmarkedPosts) return null;
 

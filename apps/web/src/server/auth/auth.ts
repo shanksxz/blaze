@@ -17,7 +17,6 @@ export const auth = betterAuth({
 		github: {
 			clientId: env.GITHUB_ID,
 			clientSecret: env.GITHUB_SECRET,
-
 		},
 	},
 	user: {
