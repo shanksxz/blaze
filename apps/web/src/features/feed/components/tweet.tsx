@@ -50,7 +50,7 @@ export default function Tweet() {
 				value={content}
 				onChange={(e) => {
 					setContent(e.target.value);
-					setError(""); 
+					setError("");
 				}}
 				placeholder="What's happening?"
 				className="w-full mb-4 resize-none focus:ring-0 bg-background"

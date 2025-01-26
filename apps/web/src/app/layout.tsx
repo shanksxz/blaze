@@ -18,9 +18,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 	return (
 		<html lang="en" className={`${geistSans.variable}`} suppressHydrationWarning>
 			<body>
-        <Provider>
-          {children}
-        </Provider>
+				<Provider>{children}</Provider>
 				<Toaster />
 			</body>
 		</html>
