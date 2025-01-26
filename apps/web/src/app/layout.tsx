@@ -1,5 +1,4 @@
 import { Toaster } from "@/components/ui/sonner";
-import { TRPCReactProvider } from "@/trpc/react";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
@@ -17,9 +16,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html lang="en" className={`${geistSans.variable}`}>
+		<html lang="en" className={`${geistSans.variable}`} suppressHydrationWarning>
 			<body>
-				<Provider>{children}</Provider>
+        <Provider>
+          {children}
+        </Provider>
 				<Toaster />
 			</body>
 		</html>

@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
 
 		if (!session) {
 			if (isProtectedRoute) {
-				return NextResponse.redirect(new URL("/signin", request.url));
+				return NextResponse.redirect(new URL("/auth/signin", request.url));
 			}
 			if (isAuthRoute && pathName === "/") {
 				return NextResponse.next();

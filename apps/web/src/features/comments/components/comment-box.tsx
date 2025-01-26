@@ -88,7 +88,7 @@ export function CommentBox({
 				<Textarea
 					{...form.register("content")}
 					placeholder={parentCommentId ? "Reply to this comment..." : "Write a message..."}
-					className="min-h-[60px] resize-none border bg-background/50 text-sm focus-visible:ring-1"
+					className="min-h-[60px] resize-none border bg-background text-sm focus-visible:ring-1"
 				/>
 				<div className="flex items-center justify-between">
 					<div className="text-xs text-muted-foreground">

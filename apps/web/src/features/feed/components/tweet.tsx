@@ -50,10 +50,10 @@ export default function Tweet() {
 				value={content}
 				onChange={(e) => {
 					setContent(e.target.value);
-					setError(""); // Clear error when user types
+					setError(""); 
 				}}
 				placeholder="What's happening?"
-				className="w-full mb-4 resize-none focus:ring-0"
+				className="w-full mb-4 resize-none focus:ring-0 bg-background"
 			/>
 			{error && <p className="text-red-500">{error}</p>}
 			<div className="flex items-center justify-between">
