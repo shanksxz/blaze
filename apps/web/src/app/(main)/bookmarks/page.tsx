@@ -1,40 +1,25 @@
-"use client";
-
-import { Post } from "@/features/post/components/post-card";
-import { usePostService } from "@/hooks/api-hooks";
-import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
+import LoadingSkeleton from "@/components/layout/loading-skeleton";
+import { Suspense } from "react";
+import Client from "./_client";
 
 export default function Page() {
-	const { data: bookmarkedPosts } = api.bookmark.getBookmarkedPosts.useQuery();
-	const router = useRouter();
-	const { likePost, repostPost, bookmarkPost } = usePostService();
-
-	if (!bookmarkedPosts) return null;
-
 	return (
-		<main className="max-w-2xl mx-auto pt-4 px-4">
+		<section>
 			<div className="mb-6">
 				<h1 className="text-2xl font-bold">Bookmarks</h1>
 				<p className="text-muted-foreground">Your saved posts</p>
 			</div>
-
-			<div className="space-y-4">
-				{bookmarkedPosts.length === 0 ? (
-					<div className="text-center py-8 text-muted-foreground">No bookmarked posts yet</div>
-				) : (
-					bookmarkedPosts.map((post) => (
-						<div key={post.id} onClick={() => router.push(`/post/${post.id}`)} className="cursor-pointer">
-							<Post
-								post={post}
-								onLike={() => likePost.mutate({ postId: post.id })}
-								onRepost={() => repostPost.mutate({ postId: post.id })}
-								onBookmark={() => repostPost.mutate({ postId: post.id })}
-							/>
-						</div>
-					))
-				)}
-			</div>
-		</main>
+			<Suspense
+				fallback={
+					<div className="space-y-4">
+						{[...Array(3)].map((_, index) => (
+							<LoadingSkeleton key={index} />
+						))}
+					</div>
+				}
+			>
+				<Client />
+			</Suspense>
+		</section>
 	);
 }

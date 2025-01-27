@@ -15,7 +15,8 @@
 				"useExhaustiveDependencies": "off"
 			},
 			"suspicious": {
-				"noExplicitAny": "off"
+				"noExplicitAny": "off",
+        "noArrayIndexKey": "off"
 			},
 			"a11y": {
 				"useKeyWithClickEvents": "warn",

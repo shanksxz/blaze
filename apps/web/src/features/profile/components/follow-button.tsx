@@ -14,13 +14,10 @@ export default function FollowButton({ userId, initialIsFollowing = false }: Fol
 	const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
 	const utils = api.useUtils();
 
-	const router = useRouter();
-
 	const toggleFollow = api.user.toggleFollow.useMutation({
 		onSuccess: () => {
 			setIsFollowing(!isFollowing);
 			utils.user.profile.invalidate();
-			router.refresh();
 		},
 	});
 
@@ -30,7 +27,7 @@ export default function FollowButton({ userId, initialIsFollowing = false }: Fol
 			variant={isFollowing ? "outline" : "default"}
 			disabled={toggleFollow.isPending}
 		>
-			{toggleFollow.isPending ? "Loading..." : isFollowing ? "Unfollow" : "Follow"}
+			{isFollowing ? "Unfollow" : "Follow"}
 		</Button>
 	);
 }

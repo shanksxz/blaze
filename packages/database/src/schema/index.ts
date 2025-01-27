@@ -5,3 +5,4 @@ export * from "./likes";
 export * from "./posts";
 export * from "./reposts";
 export * from "./users";
+export * from "./hashtags";

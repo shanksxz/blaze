@@ -9,7 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				<AppSidebar />
 				<div className="flex-1 flex flex-col bg-background">
 					<AppHeader />
-					<main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+					<main className="flex-1 container mx-auto px-6 py-4">{children}</main>
 				</div>
 			</div>
 		</SidebarProvider>

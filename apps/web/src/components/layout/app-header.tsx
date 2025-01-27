@@ -19,7 +19,11 @@ import React from "react";
 export default function AppHeader() {
 	const { theme, setTheme } = useTheme();
 	const pathname = usePathname();
-	const pathSegments = pathname.split("/").filter((segment) => segment);
+	const pathSegments = pathname
+		.split("/")
+		.filter(Boolean)
+		.map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+		.slice(0, pathname.split("/").filter(Boolean).length > 1 ? -1 : undefined);
 
 	return (
 		<header className="px-4 py-5 flex flex-col gap-4">
@@ -33,7 +37,7 @@ export default function AppHeader() {
 								<BreadcrumbItem>
 									<BreadcrumbLink href="/">Home</BreadcrumbLink>
 								</BreadcrumbItem>
-								{pathSegments.slice(0, pathSegments.length - 1).map((segment, index) => (
+								{pathSegments.map((segment, index) => (
 									<React.Fragment key={segment}>
 										<BreadcrumbSeparator />
 										<BreadcrumbItem>

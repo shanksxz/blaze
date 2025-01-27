@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { api } from "@/trpc/server";
 import { Heart, MessageCircle, Repeat2 } from "lucide-react";
+import Link from "next/link";
 
 export default async function PostList({ userId, context }: { userId: string; context: "posts" | "likes" }) {
 	const posts = await api.user[context]({ userId });
@@ -17,7 +18,9 @@ export default async function PostList({ userId, context }: { userId: string; co
 							</Avatar>
 							<div>
 								<p className="font-semibold">{post.createdBy?.name}</p>
-								<p className="text-sm text-gray-500">@{post.createdBy?.username}</p>
+								<Link href={`/profile/${post.createdBy?.username}`} className="hover:underline">
+									<p className="text-sm text-gray-500">@{post.createdBy?.username}</p>
+								</Link>
 							</div>
 						</div>
 					</CardHeader>

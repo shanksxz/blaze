@@ -1,12 +1,13 @@
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import {
 	and,
-	bookmarks,
 	comments,
 	countDistinct,
 	eq,
 	getISOFormatDateQuery,
+	hashtags,
 	isNull,
+	postHashtags,
 	postLikes,
 	posts,
 	reposts,
@@ -16,12 +17,83 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const postRouter = createTRPCRouter({
-	create: protectedProcedure.input(z.object({ content: z.string().min(1) })).mutation(async ({ ctx, input }) => {
-		await ctx.db.insert(posts).values({
-			content: input.content,
-			createdById: ctx.session.user.id,
-		});
-	}),
+	create: protectedProcedure
+		.input(
+			z.object({
+				content: z.string().min(1),
+				hashtags: z.array(z.string()).optional(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			return await ctx.db.transaction(async (tx) => {
+				const [post] = await tx
+					.insert(posts)
+					.values({
+						content: input.content,
+						createdById: ctx.session.user.id,
+					})
+					.returning();
+
+				if (input.hashtags?.length) {
+					const normalizedTags = [...new Set(input.hashtags.map((tag) => tag.toLowerCase().trim()))];
+					const hashtagRecords = await Promise.all(
+						normalizedTags.map(async (tagName) => {
+							const [existing] = await tx.select().from(hashtags).where(eq(hashtags.name, tagName));
+							if (existing) return existing;
+							const [newTag] = await tx.insert(hashtags).values({ name: tagName }).returning();
+							return newTag;
+						}),
+					);
+
+					await tx.insert(postHashtags).values(
+						hashtagRecords.map((tag) => ({
+							postId: post.id,
+							hashtagId: tag.id,
+						})),
+					);
+				}
+
+				const postWithRelations = await tx.query.posts.findFirst({
+					where: eq(posts.id, post.id),
+					with: {
+						author: {
+							columns: {
+								name: true,
+								image: true,
+								username: true,
+							},
+						},
+						postLikes: true,
+						reposts: true,
+						postComments: true,
+						bookmarks: true,
+						postHashtags: {
+							with: {
+								hashtag: true,
+							},
+						},
+					},
+				});
+
+				if (!postWithRelations) {
+					throw new TRPCError({
+						code: "INTERNAL_SERVER_ERROR",
+						message: "Failed to create post",
+					});
+				}
+
+				return {
+					...postWithRelations,
+					likes: postWithRelations.postLikes.length,
+					reposts: postWithRelations.reposts.length,
+					commentsCount: postWithRelations.postComments.length,
+					hasLiked: false,
+					hasReposted: false,
+					isBookmarked: false,
+					hashtags: postWithRelations.postHashtags.map((ph) => ph.hashtag.name),
+				};
+			});
+		}),
 
 	getLatest: publicProcedure.query(async ({ ctx }) => {
 		const posts = await ctx.db.query.posts.findMany({
@@ -38,6 +110,11 @@ export const postRouter = createTRPCRouter({
 				reposts: true,
 				postComments: true,
 				bookmarks: true,
+				postHashtags: {
+					with: {
+						hashtag: true,
+					},
+				},
 			},
 			limit: 10,
 		});
@@ -50,6 +127,7 @@ export const postRouter = createTRPCRouter({
 			hasLiked: post.postLikes.some((like) => like.userId === ctx.session?.user?.id),
 			hasReposted: post.reposts.some((repost) => repost.userId === ctx.session?.user?.id),
 			isBookmarked: post.bookmarks.some((bookmark) => bookmark.userId === ctx.session?.user?.id),
+			hashtags: post.postHashtags.map((ph) => ph.hashtag.name),
 		}));
 	}),
 
@@ -79,6 +157,11 @@ export const postRouter = createTRPCRouter({
 					},
 				},
 				bookmarks: true,
+				postHashtags: {
+					with: {
+						hashtag: true,
+					},
+				},
 			},
 		});
 
@@ -97,6 +180,7 @@ export const postRouter = createTRPCRouter({
 			hasLiked: post.postLikes.some((like) => like.userId === ctx.session?.user?.id),
 			hasReposted: post.reposts.some((repost) => repost.userId === ctx.session?.user?.id),
 			isBookmarked: post.bookmarks.some((bookmark) => bookmark.userId === ctx.session?.user?.id),
+			hashtags: post.postHashtags.map((ph) => ph.hashtag.name),
 		};
 	}),
 
