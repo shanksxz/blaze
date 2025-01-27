@@ -46,6 +46,11 @@ export const bookmarkRouter = createTRPCRouter({
 						reposts: true,
 						postComments: true,
 						bookmarks: true,
+						postHashtags: {
+							with: {
+								hashtag: true,
+							},
+						},
 					},
 				},
 			},
@@ -60,6 +65,7 @@ export const bookmarkRouter = createTRPCRouter({
 			hasLiked: post.postLikes.some((like) => like.userId === ctx.session.user.id),
 			hasReposted: post.reposts.some((repost) => repost.userId === ctx.session.user.id),
 			isBookmarked: post.bookmarks.some((bookmark) => bookmark.userId === ctx.session.user.id),
+			hashtags: post.postHashtags.map((ph) => ph.hashtag.name),
 		}));
 	}),
 });
