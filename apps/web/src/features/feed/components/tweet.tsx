@@ -24,6 +24,7 @@ export default function TweetForm() {
 			utils.post.getLatest.invalidate();
 			setContent("");
 			setError("");
+      setTags([]);
 		},
 		onError: (error) => {
 			toast.error("Failed to create post.");
