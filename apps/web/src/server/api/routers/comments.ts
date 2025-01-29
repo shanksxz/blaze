@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { comments, eq, getISOFormatDateQuery, posts, sql } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -73,7 +73,7 @@ export const commentRouter = createTRPCRouter({
 			});
 			return comment;
 		}),
-	getChildComments: protectedProcedure
+	getChildComments: publicProcedure 
 		.input(z.object({ parentCommentId: z.number() }))
 		.query(async ({ ctx, input }) => {
 			const allComments = await ctx.db.query.comments.findMany({
