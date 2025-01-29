@@ -2,11 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useAutoResizeTextArea } from "@/hooks/use-auto-resize";
 import { authClient } from "@/server/auth/auth-client";
 import { api } from "@/trpc/react";
 import { tweetSchema } from "@/validation";
 import { Calendar, Image, Smile } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const MAX_LENGTH = 280;
@@ -16,15 +17,18 @@ export default function TweetForm() {
 	const [tags, setTags] = useState<string[]>([]);
 	const [error, setError] = useState("");
 	const { data: session } = authClient.useSession();
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	const utils = api.useUtils();
+	useAutoResizeTextArea(textareaRef);
+
 	const createPost = api.post.create.useMutation({
 		onSuccess: () => {
 			toast.success("Post has been created.");
 			utils.post.getLatest.invalidate();
 			setContent("");
 			setError("");
-      setTags([]);
+			setTags([]);
 		},
 		onError: (error) => {
 			toast.error("Failed to create post.");
@@ -69,7 +73,7 @@ export default function TweetForm() {
 	const remainingCharacters = MAX_LENGTH - characterCount;
 
 	return (
-		<div className="border rounded-lg p-4 mb-6 bg-card">
+		<div className="border rounded-lg mb-6 bg-card">
 			<form onSubmit={onSubmit}>
 				<div className="mb-4">
 					{tags.length > 0 && (
@@ -90,6 +94,7 @@ export default function TweetForm() {
 						placeholder="What's happening?"
 						className="w-full resize-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 min-h-[100px]"
 						maxLength={MAX_LENGTH}
+						ref={textareaRef}
 					/>
 				</div>
 

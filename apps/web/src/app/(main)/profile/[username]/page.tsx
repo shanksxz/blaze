@@ -13,8 +13,8 @@ export default async function ProfilePage(props: { params: tProps }) {
 	const { username } = await props.params;
 	const profile = await api.user.profile({ username });
 	return (
-		<div className="max-w-3xl mx-auto px-4 py-6">
-			<header className="mb-8">
+		<section className="">
+			<div className="mb-8">
 				<div className="flex items-center gap-4">
 					<Avatar className="w-24 h-24">
 						<AvatarImage src={profile.image ?? ""} alt={profile.name ?? ""} />
@@ -38,7 +38,7 @@ export default async function ProfilePage(props: { params: tProps }) {
 						</Button>
 					</div>
 				)}
-			</header>
+			</div>
 			<Tabs defaultValue="sparks">
 				<TabsList className="w-full">
 					<TabsTrigger value="sparks" className="flex-1">
@@ -61,6 +61,6 @@ export default async function ProfilePage(props: { params: tProps }) {
 					<PostList userId={profile.id} context="likes" />
 				</TabsContent>
 			</Tabs>
-		</div>
+		</section>
 	);
 }

@@ -10,9 +10,14 @@ export function CommentTree({ postId }: { postId: number }) {
 		data: comments,
 		isLoading,
 		error,
-	} = api.post.getComments.useQuery({
-		postId,
-	});
+	} = api.post.getComments.useQuery(
+		{ postId },
+		{
+			refetchOnWindowFocus: false,
+			refetchOnMount: true,
+			staleTime: 0,
+		},
+	);
 
 	if (isLoading) {
 		return (
@@ -28,11 +33,11 @@ export function CommentTree({ postId }: { postId: number }) {
 
 	return (
 		<div className="divide-y divide-border">
-			<div className="p-4">
+			<div className="p-4 sm:p-6">
 				<CommentBox postId={postId} />
 			</div>
-			<div className="space-y-4 p-4">
-				{comments?.map((comment) => (
+			<div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+				{comments?.map((comment, _index) => (
 					<CommentItem key={comment.id} comment={comment} postId={postId} />
 				))}
 			</div>
