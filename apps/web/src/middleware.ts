@@ -2,9 +2,8 @@ import type { Session } from "@/server/auth/auth";
 import { betterFetch } from "@better-fetch/fetch";
 import { type NextRequest, NextResponse } from "next/server";
 
-const authRoutes = ["/sign-in", "/sign-up", "/forgot-password"];
+const authRoutes = ["/signin"];
 const protectedRoutes = ["/profile", "/settings", "/dashboard"];
-const profileSetupRoute = "/setup";
 
 export async function middleware(request: NextRequest) {
 	const pathName = request.nextUrl.pathname;
@@ -28,15 +27,6 @@ export async function middleware(request: NextRequest) {
 			}
 			return NextResponse.next();
 		}
-
-		if (!session.user.username && pathName !== profileSetupRoute) {
-			return NextResponse.redirect(new URL(profileSetupRoute, request.url));
-		}
-
-		if (session.user.username && pathName === profileSetupRoute) {
-			return NextResponse.redirect(new URL("/profile", request.url));
-		}
-
 		return NextResponse.next();
 	} catch (error) {
 		console.error("Error in auth middleware:", error);

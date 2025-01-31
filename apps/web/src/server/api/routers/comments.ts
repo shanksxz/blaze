@@ -73,24 +73,22 @@ export const commentRouter = createTRPCRouter({
 			});
 			return comment;
 		}),
-	getChildComments: publicProcedure 
-		.input(z.object({ parentCommentId: z.number() }))
-		.query(async ({ ctx, input }) => {
-			const allComments = await ctx.db.query.comments.findMany({
-				where: eq(comments.parentCommentId, input.parentCommentId),
-				with: {
-					author: {
-						columns: {
-							id: true,
-							username: true,
-							image: true,
-						},
+	getChildComments: publicProcedure.input(z.object({ parentCommentId: z.number() })).query(async ({ ctx, input }) => {
+		const allComments = await ctx.db.query.comments.findMany({
+			where: eq(comments.parentCommentId, input.parentCommentId),
+			with: {
+				author: {
+					columns: {
+						id: true,
+						username: true,
+						image: true,
 					},
 				},
-				extras: {
-					createdAt: getISOFormatDateQuery(comments.createdAt).as("created_at"),
-				},
-			});
-			return allComments;
-		}),
+			},
+			extras: {
+				createdAt: getISOFormatDateQuery(comments.createdAt).as("created_at"),
+			},
+		});
+		return allComments;
+	}),
 });

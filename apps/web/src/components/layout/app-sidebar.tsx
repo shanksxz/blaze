@@ -49,14 +49,7 @@ export function AppSidebar() {
 	const handleSignOut = async () => {
 		try {
 			setPending(true);
-			await authClient.signOut({
-				fetchOptions: {
-					onSuccess: () => {
-						router.push("/signin");
-						router.refresh();
-					},
-				},
-			});
+			await authClient.signOut();
 		} catch (error) {
 			console.error("Error signing out:", error);
 		} finally {
