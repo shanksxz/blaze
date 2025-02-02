@@ -28,10 +28,10 @@ import ComingSoon from "@/components/layout/coming-soon";
 // 	);
 // }
 
-export default function Page({
+export default async function Page({
 	searchParams,
-} : {
-	searchParams : { [key : string]: string | string[] | undefined };
+}: {
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-	return <ComingSoon />
+	return <ComingSoon />;
 }

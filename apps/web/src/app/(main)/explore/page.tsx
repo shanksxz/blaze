@@ -1,19 +1,7 @@
 import { Search } from "@/features/explore/components/search-query";
 import { TrendingTopics } from "@/features/explore/components/trending-topics";
-import { redirect } from "next/navigation";
 
-export default function Page({
-	searchParams,
-}: {
-	searchParams: { [key: string]: string | string[] | undefined };
-}) {
-	// If hashtag is provided in search params, redirect to explore with search
-	if (searchParams.hashtag) {
-		const hashtag = Array.isArray(searchParams.hashtag) ? searchParams.hashtag[0] : searchParams.hashtag;
-
-		redirect(`/explore?q=%23${encodeURIComponent(hashtag.replace(/^#/, ""))}`);
-	}
-
+export default async function Page() {
 	return (
 		<div className="flex min-h-screen justify-center">
 			<section className="flex-1">
