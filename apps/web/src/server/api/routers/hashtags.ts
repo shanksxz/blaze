@@ -18,19 +18,16 @@ export const hashtagRouter = createTRPCRouter({
 
 	getPostsByTag: publicProcedure.input(z.object({ tag: z.string() })).query(async ({ ctx, input }) => {
 		const postsWithTag = await ctx.db.query.posts.findMany({
-			where: (posts) => {
-				const hashtagCondition = eq(hashtags.name, input.tag.toLowerCase());
-				return and(
-					eq(
-						posts.id,
-						ctx.db
-							.select({ postId: postHashtags.postId })
-							.from(postHashtags)
-							.innerJoin(hashtags, eq(hashtags.id, postHashtags.hashtagId))
-							.where(hashtagCondition),
-					),
-				);
-			},
+			where: (posts, { inArray }) =>
+				inArray(
+					posts.id,
+					ctx.db
+						.select({ postId: postHashtags.postId })
+						.from(postHashtags)
+						.innerJoin(hashtags, eq(hashtags.id, postHashtags.hashtagId))
+						.where(eq(hashtags.name, input.tag.toLowerCase())),
+				),
+			orderBy: (posts, { desc }) => [desc(posts.createdAt)],
 			with: {
 				author: {
 					columns: {
@@ -43,8 +40,12 @@ export const hashtagRouter = createTRPCRouter({
 				reposts: true,
 				postComments: true,
 				bookmarks: true,
+				postHashtags: {
+					with: {
+						hashtag: true,
+					},
+				},
 			},
-			orderBy: (posts, { desc }) => [desc(posts.createdAt)],
 		});
 
 		return postsWithTag.map((post) => ({
@@ -55,6 +56,7 @@ export const hashtagRouter = createTRPCRouter({
 			hasLiked: post.postLikes.some((like) => like.userId === ctx.session?.user?.id),
 			hasReposted: post.reposts.some((repost) => repost.userId === ctx.session?.user?.id),
 			isBookmarked: post.bookmarks.some((bookmark) => bookmark.userId === ctx.session?.user?.id),
+			hashtags: post.postHashtags.map((ph) => ph.hashtag.name),
 		}));
 	}),
 

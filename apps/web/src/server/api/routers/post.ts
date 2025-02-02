@@ -12,9 +12,16 @@ import {
 	posts,
 	reposts,
 	sql,
+	users,
 } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import {
+	createCommentNotification,
+	createLikeNotification,
+	createMentionNotification,
+	createRepostNotification,
+} from "../routers/notifications";
 
 export const postRouter = createTRPCRouter({
 	create: protectedProcedure
@@ -185,9 +192,32 @@ export const postRouter = createTRPCRouter({
 	}),
 
 	toggleLike: protectedProcedure.input(z.object({ postId: z.number() })).mutation(async ({ ctx, input }) => {
+		const post = await ctx.db.query.posts.findFirst({
+			where: eq(posts.id, input.postId),
+			with: {
+				author: {
+					columns: {
+						id: true,
+						username: true,
+					},
+				},
+			},
+		});
+
+		if (!post || !post.author) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Post not found",
+			});
+		}
+
 		const existingLike = await ctx.db.query.postLikes.findFirst({
 			where: and(eq(postLikes.postId, input.postId), eq(postLikes.userId, ctx.session.user.id)),
 		});
+
+		if (!existingLike && post.author.id !== ctx.session.user.id) {
+			await createLikeNotification(ctx, post.author.id, input.postId);
+		}
 
 		if (existingLike) {
 			await ctx.db
@@ -209,6 +239,40 @@ export const postRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
+			const post = await ctx.db.query.posts.findFirst({
+				where: eq(posts.id, input.postId),
+				with: {
+					author: {
+						columns: {
+							id: true,
+							username: true,
+						},
+					},
+				},
+			});
+
+			if (!post || !post.author.id) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Post not found",
+				});
+			}
+
+			const mentions = input.content.match(/@(\w+)/g);
+			if (mentions) {
+				await Promise.all(
+					mentions.map(async (mention) => {
+						const username = mention.slice(1);
+						const user = await ctx.db.query.users.findFirst({
+							where: eq(users.username, username),
+						});
+						if (user) {
+							await createMentionNotification(ctx, user.id, input.postId);
+						}
+					}),
+				);
+			}
+
 			const [comment] = await ctx.db.transaction(async (tx) => {
 				const [updated] = await tx
 					.update(posts)
@@ -242,6 +306,9 @@ export const postRouter = createTRPCRouter({
 					});
 			});
 
+			if (post.author.id !== ctx.session.user.id) {
+				await createCommentNotification(ctx, post.author.id, input.postId, comment.id);
+			}
 			return comment;
 		}),
 
@@ -299,21 +366,43 @@ export const postRouter = createTRPCRouter({
 	}),
 
 	repost: protectedProcedure.input(z.object({ postId: z.number() })).mutation(async ({ ctx, input }) => {
-		const existingRepost = await ctx.db.query.reposts.findFirst({
-			where: and(eq(reposts.postId, input.postId), eq(reposts.userId, ctx.session.user.id)),
+		const post = await ctx.db.query.posts.findFirst({
+			where: eq(posts.id, input.postId),
+			with: {
+				author: {
+					columns: {
+						id: true,
+						username: true,
+					},
+				},
+			},
 		});
 
-		if (existingRepost) {
+		if (!post || !post.author.id) {
 			throw new TRPCError({
-				code: "CONFLICT",
-				message: "Already reposted",
+				code: "NOT_FOUND",
+				message: "Post not found",
 			});
 		}
 
-		await ctx.db.insert(reposts).values({
-			postId: input.postId,
-			userId: ctx.session.user.id,
+		const existing = await ctx.db.query.reposts.findFirst({
+			where: and(eq(reposts.postId, input.postId), eq(reposts.userId, ctx.session.user.id)),
 		});
+
+		if (!existing && post.author.id !== ctx.session.user.id) {
+			await createRepostNotification(ctx, post.author.id, input.postId);
+		}
+
+		if (existing) {
+			await ctx.db.delete(reposts).where(eq(reposts.id, existing.id));
+		} else {
+			await ctx.db.insert(reposts).values({
+				postId: input.postId,
+				userId: ctx.session.user.id,
+			});
+		}
+
+		return { success: true };
 	}),
 
 	toggleRepost: protectedProcedure.input(z.object({ postId: z.number() })).mutation(async ({ ctx, input }) => {

@@ -26,8 +26,7 @@ export function TrendingTopics({ limit = 5, compact = false }: TrendingTopicsPro
 	);
 
 	const handleHashtagClick = (tag: string) => {
-		//TODO: implement this
-		// router.push(`/hashtag/${tag}`);
+		router.push(`/post?hashtag=${encodeURIComponent(tag)}`);
 	};
 
 	if (!trends) return null;
@@ -44,8 +43,9 @@ export function TrendingTopics({ limit = 5, compact = false }: TrendingTopicsPro
 function TrendingTopic({ trend, onClick }: { trend: Hashtag; onClick: (tag: string) => void }) {
 	return (
 		<div className="py-3">
-			<Link
-				href={`/hashtag/${trend.name}`}
+			<button
+				type="button"
+				onClick={() => onClick(trend.name)}
 				className="w-full flex justify-between items-center p-2 rounded-md hover:bg-accent/50"
 			>
 				<div className="flex items-start gap-3">
@@ -55,7 +55,7 @@ function TrendingTopic({ trend, onClick }: { trend: Hashtag; onClick: (tag: stri
 					</div>
 				</div>
 				<MoreHorizontal className="h-5 w-5 text-muted-foreground" />
-			</Link>
+			</button>
 		</div>
 	);
 }

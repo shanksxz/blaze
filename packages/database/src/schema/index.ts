@@ -6,3 +6,4 @@ export * from "./posts";
 export * from "./reposts";
 export * from "./users";
 export * from "./hashtags";
+export * from "./notifications";

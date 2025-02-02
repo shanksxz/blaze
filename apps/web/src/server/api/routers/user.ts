@@ -2,6 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { and, comments, desc, eq, follows, postLikes, posts, reposts, sql, users } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { createFollowNotification } from "../routers/notifications";
 
 export const userRouter = createTRPCRouter({
 	profile: protectedProcedure.input(z.object({ username: z.string().min(3) })).query(async ({ ctx, input }) => {
@@ -117,6 +118,10 @@ export const userRouter = createTRPCRouter({
 		const existing = await ctx.db.query.follows.findFirst({
 			where: and(eq(follows.followerId, ctx.session.user.id), eq(follows.followingId, input.userId)),
 		});
+
+		if (!existing) {
+			await createFollowNotification(ctx, targetUser.id);
+		}
 
 		if (existing) {
 			await ctx.db.delete(follows).where(eq(follows.id, existing.id));
