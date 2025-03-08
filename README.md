@@ -1,31 +1,107 @@
 # Blaze 🔥
 
-Blaze is a modern, open-source social media platform designed to revolutionize real-time communication and connection. Built with cutting-edge technologies, Blaze offers a lightning-fast, intuitive experience for sharing thoughts, connecting with others, and staying informed.
+A modern, full-stack social media platform built with cutting-edge technologies. Blaze offers real-time interactions, robust user engagement features, and a scalable architecture.
 
-## Key Features
-- Real-time messaging
-- User profiles
-- Post/message sharing
-- Lightweight and scalable architecture
-- Advanced privacy controls
+## Features 🚀
 
-## Tech Stack
-- Next.js
-- tRPC
-- Shadcn/UI
-- Drizzle ORM
-- NextAuth
-- TailwindCSS
-- Biome (Linter/Formatter)
+### Core Functionality
+- **User Management**
+  - Secure authentication with multiple providers(currently only github is supported)
+  - Custom user profiles with bio and avatar(soon)
+  - Username and email verification system(soon)
+  
+- **Social Interactions**
+  - Create, edit, and delete posts
+  - Like and comment on posts
+  - Repost functionality
+  - Follow/unfollow users
+  - Real-time notifications
+  
+- **Content Management**
+  - Post with text content (up to 256 characters)
+  - Hashtag support and tracking
+  - Bookmark favorite posts
+  - Comment threading
 
-## Getting Started
-1. Clone the repository
-2. Install dependencies
-3. Set up environment variables
-4. Run the application
+- **Engagement Tracking**(soon)
+  - Post engagement metrics (likes, comments, reposts)
+  - User following/follower system
+  - Notification system for social interactions
 
-## Contributing
-We welcome contributions! Please read our CONTRIBUTING.md for details on our code of conduct and the process for submitting pull requests.
+## Tech Stack 💻
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+### Frontend
+- **Next.js** - React framework for production
+- **Shadcn UI** - Modern UI component library
+- **TailwindCSS** - Utility-first CSS framework
+
+### Backend
+- **tRPC** - End-to-end typesafe APIs
+- **Drizzle ORM** - TypeScript ORM with maximum type safety
+- **PostgreSQL** - Primary database
+- **BetterAuth** - Authentication solution
+
+### Development Tools
+- **TypeScript** - Static type checking
+- **Turborepo** - High-performance build system
+- **Biome** - Fast formatter and linter
+- **pnpm** - Fast, disk space efficient package manager
+
+## Available Scripts
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm format-and-lint` - Run Biome linter and formatter
+- `pnpm format-and-lint:fix` - Run Biome linter and formatter and fix linting errors
+- `pnpm db:migrate` - Run database migrations
+- `pnpm db:studio` - Open database studio
+- `pnpm db:generate` - Generate database models
+
+## Project Structure 📁
+
+```
+blaze/
+├── apps/
+│   └── web/          
+├── packages/
+│   ├── database/     
+│   └── typescript-config/ 
+```
+
+## Getting Started 🏁
+
+1. **Prerequisites**
+   - Node.js 20+
+   - pnpm
+   - PostgreSQL
+
+2. **Installation**
+   ```bash
+   # clone the repository
+   git clone https://github.com/shanksxz/blaze.git
+   cd blaze
+
+   # install dependencies
+   pnpm install
+   ```
+
+3. **Environment Setup**
+   - Copy `.env.example` to `.env`
+   - Configure your environment variables:
+     - Database connection
+     - Authentication providers
+     - API keys
+
+4. **Development**
+   ```bash
+   pnpm dev
+   ```
+
+## Contributing 🤝
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License 📝
+
+This project is licensed under the MIT License - see the LICENSE file for details.
