@@ -3,7 +3,7 @@ import { betterFetch } from "@better-fetch/fetch";
 import { type NextRequest, NextResponse } from "next/server";
 
 const authRoutes = ["/signin"];
-const protectedRoutes = ["/profile", "/settings", "/dashboard"];
+const protectedRoutes = ["/bookmarks", "/settings", "/dashboard", "/notifications"];
 
 export async function middleware(request: NextRequest) {
 	const pathName = request.nextUrl.pathname;

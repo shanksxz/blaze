@@ -1,112 +1,160 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Post } from "@/features/post/components/post-card";
+import { usePostService } from "@/hooks/api-hooks";
 import { useDebounce } from "@/hooks/use-debounce";
+import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import { SearchIcon, X } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar, CalendarIcon, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { DateRange } from "react-day-picker";
 
-export function Search() {
+export default function SearchInterface() {
+	const [searchQuery, setSearchQuery] = useState("");
+	const [date, setDate] = useState<DateRange | undefined>();
+	const [sortBy, setSortBy] = useState<"relevance" | "newest" | "oldest">("relevance");
+	const [openCalendar, setOpenCalendar] = useState(false);
+	const [filters, setFilters] = useState<string[]>([]);
+	const [cleanQuery, setCleanQuery] = useState("");
+	const debouncedQuery = useDebounce(cleanQuery, 3000);
+	const debouncedFilters = useDebounce(filters, 3000);
 	const router = useRouter();
-	const [query, setQuery] = useState("");
-	const debouncedQuery = useDebounce(query, 300);
 
-	const { data: results, isLoading } = api.search.all.useQuery(
-		{ query: debouncedQuery },
+	const { likePost, repostPost, bookmarkPost } = usePostService();
+
+	const {
+		data: searchResults,
+		isLoading,
+		fetchNextPage,
+		hasNextPage,
+	} = api.search.explore.useInfiniteQuery(
 		{
-			enabled: debouncedQuery.length > 0,
+			query: debouncedQuery,
+			dateRange: date,
+			filters: debouncedFilters,
+			sortBy,
+			limit: 5,
+		},
+		{
+			enabled: Boolean(debouncedQuery.length > 0 || debouncedFilters.length > 0),
+			retry: false,
+			getNextPageParam: (lastPage) => lastPage.nextCursor,
 		},
 	);
 
-	const handleSearch = (value: string) => {
-		setQuery(value);
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const query = e.target.value;
+		setSearchQuery(query);
+		const usernames = query.match(/from:[a-zA-Z0-9_]+/g)?.map((u) => u) || [];
+		const hashtags = query.match(/#[a-zA-Z0-9]+/g)?.map((f) => f) || [];
+		setFilters([...usernames, ...hashtags]);
+		const cleanedQuery = query
+			.replace(/from:[a-zA-Z0-9]+/g, "")
+			.replace(/#[a-zA-Z0-9]+/g, "")
+			.trim();
+		setCleanQuery(cleanedQuery);
 	};
 
-	const handleClear = () => {
-		setQuery("");
-	};
-
-	const handleHashtagClick = (tag: string) => {
-		router.push(`/hashtag/${tag}`);
-	};
-
-	const handleUserClick = (username: string) => {
-		router.push(`/profile/${username}`);
+	const formatDateRange = () => {
+		if (date?.from && date?.to) {
+			return `${format(date.from, "MMM d, yyyy")} - ${format(date.to, "MMM d, yyyy")}`;
+		}
+		return "Select date range";
 	};
 
 	return (
-		<div className="relative w-full">
-			<div className="relative">
-				<SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-				<Input
-					className="pl-9 pr-10"
-					placeholder="Search hashtags or users"
-					value={query}
-					onChange={(e) => handleSearch(e.target.value)}
-				/>
-				{query && (
-					<Button
-						variant="ghost"
-						size="icon"
-						className="absolute right-1 top-1/2 -translate-y-1/2"
-						onClick={handleClear}
-					>
-						<X className="h-4 w-4" />
-					</Button>
-				)}
+		<div className="w-full space-y-4">
+			<div className="space-y-4">
+				<div className="relative">
+					<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+					<Input
+						placeholder="Search posts, users, and topics (try from:user or #hashtag)"
+						value={searchQuery}
+						onChange={(e) => handleInputChange(e)}
+						className="pl-9"
+					/>
+				</div>
+			</div>
+			<div className="flex flex-wrap gap-4">
+				<Popover open={openCalendar} onOpenChange={setOpenCalendar}>
+					<PopoverTrigger asChild>
+						<Button
+							variant="outline"
+							className={cn("justify-start text-left font-normal", !date && "text-muted-foreground")}
+						>
+							<CalendarIcon className="mr-2 h-4 w-4" />
+							{formatDateRange()}
+						</Button>
+					</PopoverTrigger>
+					<PopoverContent className="w-auto p-0" align="start">
+						<CalendarComponent
+							initialFocus
+							mode="range"
+							defaultMonth={date?.from}
+							selected={date}
+							onSelect={(value: DateRange | undefined) => setDate(value)}
+							numberOfMonths={2}
+						/>
+					</PopoverContent>
+				</Popover>
+
+				<Select value={sortBy} onValueChange={(value: "relevance" | "newest" | "oldest") => setSortBy(value)}>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue placeholder="Sort by" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="relevance">Sort by Relevance</SelectItem>
+						<SelectItem value="newest">Date (Newest First)</SelectItem>
+						<SelectItem value="oldest">Date (Oldest First)</SelectItem>
+					</SelectContent>
+				</Select>
 			</div>
 
-			{query && (
-				<div className="absolute top-full w-full mt-2 bg-background border rounded-lg shadow-lg z-50 p-2">
-					<ScrollArea className="max-h-[400px]">
-						{isLoading ? (
-							<div className="p-4 text-center text-muted-foreground">Loading...</div>
-						) : results && (results.users.length > 0 || results.hashtags.length > 0) ? (
-							<>
-								{results.hashtags.map((hashtag) => (
-									<Button
-										key={hashtag.name}
-										variant="ghost"
-										className="w-full justify-start px-4 py-2"
-										onClick={() => handleHashtagClick(hashtag.name)}
-									>
-										<div>
-											<div className="font-medium">#{hashtag.name}</div>
-											<div className="text-sm text-muted-foreground">
-												{hashtag.count.toLocaleString()} posts
-											</div>
-										</div>
-									</Button>
-								))}
-
-								{results.users.map((user) => (
-									<Button
-										key={user.id}
-										variant="ghost"
-										className="w-full justify-start px-4 py-2"
-										onClick={() => handleUserClick(user.username as string)}
-									>
-										<Avatar className="h-8 w-8 mr-2">
-											<AvatarImage src={user.image || ""} />
-											<AvatarFallback>{user.name?.[0]}</AvatarFallback>
-										</Avatar>
-										<div className="text-left">
-											<div className="font-medium">{user.name}</div>
-											<div className="text-sm text-muted-foreground">@{user.username}</div>
-										</div>
-									</Button>
-								))}
-							</>
-						) : (
-							<div className="p-4 text-center text-muted-foreground">No results found</div>
-						)}
-					</ScrollArea>
+			{isLoading ? (
+				<div className="text-center py-8">Loading...</div>
+			) : searchResults?.pages?.length ? (
+				<div className="space-y-4">
+					{searchResults.pages.map((page) =>
+						page.items.map((post) => (
+							<div
+								key={post.id}
+								onClick={() => router.push(`/post/${post.id}`)}
+								className="cursor-pointer"
+							>
+								<Post
+									post={post}
+									onLike={() => likePost.mutate({ postId: post.id })}
+									onRepost={() => repostPost.mutate({ postId: post.id })}
+									onBookmark={() => bookmarkPost.mutate({ postId: post.id })}
+								/>
+							</div>
+						)),
+					)}
+					{hasNextPage && (
+						<div className="text-center">
+							<Button onClick={() => fetchNextPage()}>Load More</Button>
+						</div>
+					)}
 				</div>
-			)}
+			) : searchQuery ? (
+				<div className="text-center py-8 text-muted-foreground">No results found</div>
+			) : null}
+
+			<div className="text-sm text-muted-foreground mt-4">
+				<p>Pro tips:</p>
+				<ul className="list-disc list-inside space-y-1 mt-2">
+					<li>Use from:username to find posts from specific users</li>
+					<li>Use #hashtag to search for topics</li>
+					<li>Combine filters like: from:user #hashtag</li>
+				</ul>
+			</div>
 		</div>
 	);
 }

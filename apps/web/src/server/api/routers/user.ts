@@ -1,5 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { and, comments, desc, eq, follows, postLikes, posts, reposts, sql, users } from "@repo/database";
+import { and, comments, desc, eq, follows, postLikes, posts as postsTable, reposts, sql, users } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createFollowNotification } from "../routers/notifications";
@@ -65,36 +65,60 @@ export const userRouter = createTRPCRouter({
 		};
 	}),
 
-	posts: protectedProcedure.input(z.object({ userId: z.string() })).query(async ({ ctx, input }) => {
-		const foo = await ctx.db
-			.select({
-				id: posts.id,
-				content: posts.content,
-				createdAt: posts.createdAt,
-				updatedAt: posts.updatedAt,
-				createdById: posts.createdById,
-				comments: sql<number>`count(distinct ${comments.id})`,
-				reposts: sql<number>`count(distinct ${reposts.id})`,
-				likes: sql<number>`count(distinct ${postLikes.id})`,
-				hasLiked: sql<boolean>`exists(select 1 from ${postLikes} where ${postLikes.postId} = ${posts.id} and ${postLikes.userId} = ${ctx.session.user.id})`,
-				hasReposted: sql<boolean>`exists(select 1 from ${reposts} where ${reposts.postId} = ${posts.id} and ${reposts.userId} = ${ctx.session.user.id})`,
-				createdBy: {
-					name: users.name,
-					image: users.image,
-					username: users.username,
-				},
-			})
-			.from(posts)
-			.leftJoin(comments, eq(comments.postId, posts.id))
-			.leftJoin(reposts, eq(reposts.postId, posts.id))
-			.leftJoin(postLikes, eq(postLikes.postId, posts.id))
-			.leftJoin(users, eq(users.id, posts.createdById))
-			.where(eq(posts.createdById, input.userId))
-			.groupBy(posts.id, users.id)
-			.orderBy(desc(posts.createdAt));
+	posts: protectedProcedure
+		.input(
+			z.object({
+				userId: z.string(),
+				limit: z.number().min(1).max(100).default(10),
+				cursor: z.number().nullish(),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			const { userId, limit, cursor } = input;
 
-		return foo;
-	}),
+			const result = await ctx.db
+				.select({
+					id: postsTable.id,
+					content: postsTable.content,
+					createdAt: postsTable.createdAt,
+					updatedAt: postsTable.updatedAt,
+					createdById: postsTable.createdById,
+					comments: sql<number>`count(distinct ${comments.id})`,
+					reposts: sql<number>`count(distinct ${reposts.id})`,
+					likes: sql<number>`count(distinct ${postLikes.id})`,
+					hasLiked: sql<boolean>`exists(select 1 from ${postLikes} where ${postLikes.postId} = ${postsTable.id} and ${postLikes.userId} = ${ctx.session.user.id})`,
+					hasReposted: sql<boolean>`exists(select 1 from ${reposts} where ${reposts.postId} = ${postsTable.id} and ${reposts.userId} = ${ctx.session.user.id})`,
+					createdBy: {
+						name: users.name,
+						image: users.image,
+						username: users.username,
+					},
+				})
+				.from(postsTable)
+				.leftJoin(comments, eq(comments.postId, postsTable.id))
+				.leftJoin(reposts, eq(reposts.postId, postsTable.id))
+				.leftJoin(postLikes, eq(postLikes.postId, postsTable.id))
+				.leftJoin(users, eq(users.id, postsTable.createdById))
+				.where(
+					cursor
+						? and(eq(postsTable.createdById, userId), sql`${postsTable.id} < ${cursor}`)
+						: eq(postsTable.createdById, userId),
+				)
+				.groupBy(postsTable.id, users.id, users.name, users.image, users.username)
+				.orderBy(desc(postsTable.id))
+				.limit(limit + 1);
+
+			let nextCursor: typeof cursor = undefined;
+			if (result.length > limit) {
+				const nextItem = result.pop();
+				nextCursor = nextItem?.id;
+			}
+
+			return {
+				items: result,
+				nextCursor,
+			};
+		}),
 
 	toggleFollow: protectedProcedure.input(z.object({ userId: z.string() })).mutation(async ({ ctx, input }) => {
 		if (input.userId === ctx.session.user.id) {
@@ -138,30 +162,30 @@ export const userRouter = createTRPCRouter({
 	likes: protectedProcedure.input(z.object({ userId: z.string() })).query(async ({ ctx, input }) => {
 		const likedPosts = await ctx.db
 			.select({
-				id: posts.id,
-				content: posts.content,
-				createdAt: posts.createdAt,
-				updatedAt: posts.updatedAt,
-				createdById: posts.createdById,
+				id: postsTable.id,
+				content: postsTable.content,
+				createdAt: postsTable.createdAt,
+				updatedAt: postsTable.updatedAt,
+				createdById: postsTable.createdById,
 				comments: sql<number>`count(distinct ${comments.id})`,
 				reposts: sql<number>`count(distinct ${reposts.id})`,
 				likes: sql<number>`count(distinct ${postLikes.id})`,
-				hasLiked: sql<boolean>`exists(select 1 from ${postLikes} where ${postLikes.postId} = ${posts.id} and ${postLikes.userId} = ${ctx.session.user.id})`,
-				hasReposted: sql<boolean>`exists(select 1 from ${reposts} where ${reposts.postId} = ${posts.id} and ${reposts.userId} = ${ctx.session.user.id})`,
+				hasLiked: sql<boolean>`exists(select 1 from ${postLikes} where ${postLikes.postId} = ${postsTable.id} and ${postLikes.userId} = ${ctx.session.user.id})`,
+				hasReposted: sql<boolean>`exists(select 1 from ${reposts} where ${reposts.postId} = ${postsTable.id} and ${reposts.userId} = ${ctx.session.user.id})`,
 				createdBy: {
 					name: users.name,
 					image: users.image,
 					username: users.username,
 				},
 			})
-			.from(posts)
-			.leftJoin(comments, eq(comments.postId, posts.id))
-			.leftJoin(reposts, eq(reposts.postId, posts.id))
-			.leftJoin(postLikes, eq(postLikes.postId, posts.id))
-			.leftJoin(users, eq(users.id, posts.createdById))
+			.from(postsTable)
+			.leftJoin(comments, eq(comments.postId, postsTable.id))
+			.leftJoin(reposts, eq(reposts.postId, postsTable.id))
+			.leftJoin(postLikes, eq(postLikes.postId, postsTable.id))
+			.leftJoin(users, eq(users.id, postsTable.createdById))
 			.where(eq(postLikes.userId, input.userId))
-			.groupBy(posts.id, users.id)
-			.orderBy(desc(posts.createdAt));
+			.groupBy(postsTable.id, users.id)
+			.orderBy(desc(postsTable.createdAt));
 
 		return likedPosts;
 	}),
