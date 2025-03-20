@@ -21,10 +21,12 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
 	user: one(users, {
 		fields: [notifications.userId],
 		references: [users.id],
+		relationName: "userNotifications",
 	}),
 	actor: one(users, {
 		fields: [notifications.actorId],
 		references: [users.id],
+		relationName: "actorNotifications",
 	}),
 	post: one(posts, {
 		fields: [notifications.postId],

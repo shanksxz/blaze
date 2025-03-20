@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/server/auth/auth-client";
 import { api } from "@/trpc/react";
 import { Bell, Check } from "lucide-react";
@@ -17,7 +16,7 @@ export default function NotificationsPage() {
 	const { data: notificationsData } = api.notifications.getNotifications.useQuery(
 		{ since: new Date(0) },
 		{
-			refetchInterval: 5000,
+			refetchInterval: 30000,
 			enabled: !!username,
 		},
 	);
@@ -100,7 +99,6 @@ export default function NotificationsPage() {
 						Mark all as read
 					</Button>
 				</CardHeader>
-				<Separator className="mb-4" />
 				<CardContent className="p-0">
 					<ScrollArea className="h-[calc(100vh-8rem)]">
 						{notifications.length === 0 ? (

@@ -5,11 +5,7 @@ import FollowButton from "@/features/profile/components/follow-button";
 import PostList from "@/features/profile/components/profile-list";
 import { api } from "@/trpc/server";
 
-type tProps = Promise<{
-	username: string;
-}>;
-
-export default async function ProfilePage(props: { params: tProps }) {
+export default async function ProfilePage(props: { params: Promise<{ username: string }> }) {
 	const { username } = await props.params;
 	const profile = await api.user.profile({ username });
 	return (

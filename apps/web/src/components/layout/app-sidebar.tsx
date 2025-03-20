@@ -19,13 +19,14 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/server/auth/auth-client";
-import { Bell, BookMarked, Home, LogOut, Mail, Search, Settings, User, X } from "lucide-react";
+import { Bell, BookMarked, Home, LogOut, Mail, Search, Settings, TrendingUpIcon, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const navigationItems = [
 	{ title: "Home", url: "/", icon: Home, disabled: false },
+	{ title: "Trending", url: "/trending", icon: TrendingUpIcon, disabled: false },
 	{ title: "Explore", url: "/explore", icon: Search, disabled: false },
 	{
 		title: "Notifications",

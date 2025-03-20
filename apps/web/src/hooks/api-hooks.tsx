@@ -1,3 +1,4 @@
+//TODO: implementation of these hooks might be wrong or can be improved
 "use client";
 
 import type { RouterOutputs } from "@/trpc/react";
@@ -10,7 +11,6 @@ type PostType = RouterOutputs["post"]["getLatest"][number];
 const updatePostAction = (post: PostType, actionType: "like" | "repost") => {
 	const actionCount = actionType === "like" ? "likes" : "reposts";
 	const hasAction = actionType === "like" ? "hasLiked" : "hasReposted";
-
 	post[actionCount] += post[hasAction] ? -1 : 1;
 	post[hasAction] = !post[hasAction];
 };
@@ -20,13 +20,21 @@ export function useLikePost() {
 
 	return api.post.toggleLike.useMutation({
 		onMutate: async ({ postId }) => {
+			await utils.post.feed.cancel();
 			await utils.post.getByPostId.cancel({ postId });
 			await utils.bookmark.getBookmarkedPosts.cancel();
+			await utils.search.explore.cancel();
 
 			const prevData = {
 				post: utils.post.getByPostId.getData({ postId }),
-				posts: utils.post.getLatest.getData(),
+				posts: utils.post.feed.getData(),
 				bookmarkPosts: utils.bookmark.getBookmarkedPosts.getData(),
+				exploreResult: utils.search.explore.getInfiniteData({
+					query: "",
+					filters: [],
+					sortBy: "relevance",
+					limit: 5,
+				}),
 			};
 
 			utils.post.getByPostId.setData({ postId }, (old) => {
@@ -36,31 +44,78 @@ export function useLikePost() {
 				});
 			});
 
-			utils.post.getLatest.setData(undefined, (old) => {
-				if (!old) return old;
-				return produce(old, (draft) => {
-					const post = draft.find((p) => p.id === postId);
-					if (post) {
-						updatePostAction(post, "like");
-					}
-				});
+			utils.post.feed.setInfiniteData({ limit: 5 }, (oldData) => {
+				if (!oldData) return oldData;
+				return {
+					...oldData,
+					pages: oldData.pages.map((page) => {
+						return {
+							...page,
+							items: page.items.map((post) => {
+								if (post.id === postId) {
+									return produce(post, (draft) => {
+										updatePostAction(draft, "like");
+									});
+								}
+								return post;
+							}),
+						};
+					}),
+				};
 			});
 
-			utils.bookmark.getBookmarkedPosts.setData(undefined, (old) => {
-				if (!old) return old;
-				const post = old.find((p) => p.id === postId);
-				if (post) {
-					return old.map((p) => {
-						if (p.id === postId) {
-							return produce(p, (draft) => {
-								updatePostAction(draft, "like");
-							});
-						}
-						return p;
-					});
-				}
-				return old;
-			});
+			utils.bookmark.getBookmarkedPosts.setInfiniteData(
+				{
+					limit: 5,
+				},
+				(oldData) => {
+					if (!oldData) return oldData;
+					return {
+						...oldData,
+						pages: oldData.pages.map((page) => {
+							return {
+								...page,
+								items: page.items.map((p) => {
+									if (p.id === postId) {
+										return produce(p, (draft) => {
+											updatePostAction(draft, "like");
+										});
+									}
+									return p;
+								}),
+							};
+						}),
+					};
+				},
+			);
+
+			utils.search.explore.setInfiniteData(
+				{
+					query: "",
+					filters: [],
+					sortBy: "relevance",
+					limit: 5,
+				},
+				(oldData) => {
+					if (!oldData) return oldData;
+					return {
+						...oldData,
+						pages: oldData.pages.map((page: any) => {
+							return {
+								...page,
+								items: page.items.map((post: PostType) => {
+									if (post.id === postId) {
+										return produce(post, (draft) => {
+											updatePostAction(draft, "like");
+										});
+									}
+									return post;
+								}),
+							};
+						}),
+					};
+				},
+			);
 
 			return prevData;
 		},
@@ -69,16 +124,28 @@ export function useLikePost() {
 				utils.post.getByPostId.setData({ postId }, context.post);
 			}
 			if (context?.posts) {
-				utils.post.getLatest.setData(undefined, context.posts);
+				utils.post.feed.setData({}, context.posts);
 			}
 			if (context?.bookmarkPosts) {
-				utils.bookmark.getBookmarkedPosts.setData(undefined, context.bookmarkPosts);
+				utils.bookmark.getBookmarkedPosts.setData({}, context.bookmarkPosts);
+			}
+			if (context?.exploreResult) {
+				utils.search.explore.setInfiniteData(
+					{
+						query: "",
+						filters: [],
+						sortBy: "relevance",
+						limit: 5,
+					},
+					context.exploreResult,
+				);
 			}
 			toast.error("Failed to like post");
 		},
 		onSettled: async (_data, _error, variables) => {
 			await utils.post.getByPostId.invalidate({ postId: variables.postId });
-			await utils.post.getLatest.invalidate();
+			await utils.post.feed.invalidate();
+			await utils.search.explore.invalidate();
 			await utils.bookmark.getBookmarkedPosts.invalidate();
 		},
 	});
@@ -90,13 +157,20 @@ export function useRepostPost() {
 	return api.post.toggleRepost.useMutation({
 		onMutate: async ({ postId }) => {
 			await utils.post.getByPostId.cancel({ postId });
-			await utils.post.getLatest.cancel();
+			await utils.post.feed.cancel();
 			await utils.bookmark.getBookmarkedPosts.cancel();
+			await utils.search.explore.cancel();
 
 			const prevData = {
 				post: utils.post.getByPostId.getData({ postId }),
-				posts: utils.post.getLatest.getData(),
+				posts: utils.post.feed.getData(),
 				bookmarkPosts: utils.bookmark.getBookmarkedPosts.getData(),
+				exploreResult: utils.search.explore.getInfiniteData({
+					query: "",
+					filters: [],
+					sortBy: "relevance",
+					limit: 5,
+				}) as any,
 			};
 
 			utils.post.getByPostId.setData({ postId }, (old) => {
@@ -106,31 +180,73 @@ export function useRepostPost() {
 				});
 			});
 
-			utils.post.getLatest.setData(undefined, (old) => {
-				if (!old) return old;
-				return produce(old, (draft) => {
-					const post = draft.find((p) => p.id === postId);
-					if (post) {
-						updatePostAction(post, "repost");
-					}
-				});
+			utils.post.feed.setInfiniteData({ limit: 5 }, (oldData) => {
+				if (!oldData) return oldData;
+				return {
+					...oldData,
+					pages: oldData.pages.map((page) => {
+						return {
+							...page,
+							items: page.items.map((post) => {
+								if (post.id === postId) {
+									return produce(post, (draft) => {
+										updatePostAction(draft, "repost");
+									});
+								}
+								return post;
+							}),
+						};
+					}),
+				};
 			});
 
-			utils.bookmark.getBookmarkedPosts.setData(undefined, (old) => {
-				if (!old) return old;
-				const post = old.find((p) => p.id === postId);
-				if (post) {
-					return old.map((p) => {
-						if (p.id === postId) {
-							return produce(p, (draft) => {
-								updatePostAction(draft, "repost");
-							});
-						}
-						return p;
-					});
-				}
-				return old;
+			utils.bookmark.getBookmarkedPosts.setInfiniteData({ limit: 5 }, (oldData) => {
+				if (!oldData) return oldData;
+				return {
+					...oldData,
+					pages: oldData.pages.map((page) => {
+						return {
+							...page,
+							items: page.items.map((p) => {
+								if (p.id === postId) {
+									return produce(p, (draft) => {
+										updatePostAction(draft, "repost");
+									});
+								}
+								return p;
+							}),
+						};
+					}),
+				};
 			});
+
+			utils.search.explore.setInfiniteData(
+				{
+					query: "",
+					filters: [],
+					sortBy: "relevance",
+					limit: 5,
+				},
+				(oldData: any) => {
+					if (!oldData) return oldData;
+					return {
+						...oldData,
+						pages: oldData.pages.map((page: any) => {
+							return {
+								...page,
+								items: page.items.map((post: PostType) => {
+									if (post.id === postId) {
+										return produce(post, (draft) => {
+											updatePostAction(draft, "repost");
+										});
+									}
+									return post;
+								}),
+							};
+						}),
+					};
+				},
+			);
 
 			return prevData;
 		},
@@ -139,10 +255,21 @@ export function useRepostPost() {
 				utils.post.getByPostId.setData({ postId }, context.post);
 			}
 			if (context?.posts) {
-				utils.post.getLatest.setData(undefined, context.posts);
+				utils.post.feed.setData({}, context.posts);
 			}
 			if (context?.bookmarkPosts) {
-				utils.bookmark.getBookmarkedPosts.setData(undefined, context.bookmarkPosts);
+				utils.bookmark.getBookmarkedPosts.setData({}, context.bookmarkPosts);
+			}
+			if (context?.exploreResult) {
+				utils.search.explore.setInfiniteData(
+					{
+						query: "",
+						filters: [],
+						sortBy: "relevance",
+						limit: 5,
+					},
+					context.exploreResult,
+				);
 			}
 			toast.error("Failed to repost");
 		},
@@ -150,6 +277,7 @@ export function useRepostPost() {
 			await utils.post.getByPostId.invalidate({ postId: variables.postId });
 			await utils.post.getLatest.invalidate();
 			await utils.bookmark.getBookmarkedPosts.invalidate();
+			await utils.search.explore.invalidate();
 		},
 	});
 }
@@ -159,24 +287,41 @@ export function useBookmarkPost() {
 
 	return api.bookmark.toggle.useMutation({
 		onMutate: async ({ postId }) => {
+			await utils.post.feed.cancel();
 			await utils.post.getByPostId.cancel({ postId });
+			await utils.bookmark.getBookmarkedPosts.cancel();
+			await utils.search.explore.cancel();
 
 			const prevData = {
 				post: utils.post.getByPostId.getData({ postId }),
-				posts: utils.post.getLatest.getData(),
+				posts: utils.post.feed.getData(),
 				bookmarkedPosts: utils.bookmark.getBookmarkedPosts.getData(),
+				exploreResult: utils.search.explore.getInfiniteData({
+					query: "",
+					filters: [],
+					sortBy: "relevance",
+					limit: 5,
+				}) as any,
 			};
 
-			utils.post.getLatest.setData(undefined, (old) => {
-				if (!old) return old;
-				return old.map((post) => {
-					if (post.id === postId) {
-						return produce(post, (draft) => {
-							draft.isBookmarked = !draft.isBookmarked;
-						});
-					}
-					return post;
-				});
+			utils.post.feed.setInfiniteData({ limit: 5 }, (oldData) => {
+				if (!oldData) return oldData;
+				return {
+					...oldData,
+					pages: oldData.pages.map((page) => {
+						return {
+							...page,
+							items: page.items.map((post) => {
+								if (post.id === postId) {
+									return produce(post, (draft) => {
+										draft.isBookmarked = !draft.isBookmarked;
+									});
+								}
+								return post;
+							}),
+						};
+					}),
+				};
 			});
 
 			utils.post.getByPostId.setData({ postId }, (old) => {
@@ -186,16 +331,63 @@ export function useBookmarkPost() {
 				});
 			});
 
-			utils.bookmark.getBookmarkedPosts.setData(undefined, (old) => {
-				if (!old) return old;
-				const post = old.find((p) => p.id === postId);
+			utils.bookmark.getBookmarkedPosts.setInfiniteData({ limit: 5 }, (oldData) => {
+				if (!oldData) return oldData;
+				const post = oldData.pages.flatMap((page) => page.items).find((p) => p.id === postId);
 				if (post) {
-					return old.filter((p) => p.id !== postId);
+					return {
+						...oldData,
+						pages: oldData.pages.map((page) => {
+							return {
+								...page,
+								items: page.items.filter((p) => p.id !== postId),
+							};
+						}),
+					};
 				}
 				const newPost = utils.post.getByPostId.getData({ postId });
-				if (!newPost) return old;
-				return [...old, { ...newPost, isBookmarked: true }];
+				if (!newPost) return oldData;
+				return {
+					...oldData,
+					pages: oldData.pages.map((page, index) => {
+						if (index === oldData.pages.length - 1) {
+							return {
+								...page,
+								items: [...page.items, { ...newPost, isBookmarked: true }],
+							};
+						}
+						return page;
+					}),
+				};
 			});
+
+			utils.search.explore.setInfiniteData(
+				{
+					query: "",
+					filters: [],
+					sortBy: "relevance",
+					limit: 5,
+				},
+				(oldData: any) => {
+					if (!oldData) return oldData;
+					return {
+						...oldData,
+						pages: oldData.pages.map((page: any) => {
+							return {
+								...page,
+								items: page.items.map((post: PostType) => {
+									if (post.id === postId) {
+										return produce(post, (draft) => {
+											draft.isBookmarked = !draft.isBookmarked;
+										});
+									}
+									return post;
+								}),
+							};
+						}),
+					};
+				},
+			);
 
 			return prevData;
 		},
@@ -204,7 +396,21 @@ export function useBookmarkPost() {
 				utils.post.getByPostId.setData({ postId }, context.post);
 			}
 			if (context?.posts) {
-				utils.post.getLatest.setData(undefined, context.posts);
+				utils.post.feed.setData({}, context.posts);
+			}
+			if (context?.bookmarkedPosts) {
+				utils.bookmark.getBookmarkedPosts.setData({}, context.bookmarkedPosts);
+			}
+			if (context?.exploreResult) {
+				utils.search.explore.setInfiniteData(
+					{
+						query: "",
+						filters: [],
+						sortBy: "relevance",
+						limit: 5,
+					},
+					context.exploreResult,
+				);
 			}
 			toast.error("Failed to bookmark post");
 		},
@@ -212,6 +418,7 @@ export function useBookmarkPost() {
 			await utils.post.getByPostId.invalidate({ postId: variables.postId });
 			await utils.post.getLatest.invalidate();
 			await utils.bookmark.getBookmarkedPosts.invalidate();
+			await utils.search.explore.invalidate();
 		},
 	});
 }

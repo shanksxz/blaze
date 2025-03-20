@@ -3,13 +3,14 @@ import {
 	and,
 	comments,
 	countDistinct,
+	desc,
 	eq,
 	getISOFormatDateQuery,
 	hashtags,
 	isNull,
 	postHashtags,
 	postLikes,
-	posts,
+	posts as postsTable,
 	reposts,
 	sql,
 	users,
@@ -34,7 +35,7 @@ export const postRouter = createTRPCRouter({
 		.mutation(async ({ ctx, input }) => {
 			return await ctx.db.transaction(async (tx) => {
 				const [post] = await tx
-					.insert(posts)
+					.insert(postsTable)
 					.values({
 						content: input.content,
 						createdById: ctx.session.user.id,
@@ -61,7 +62,7 @@ export const postRouter = createTRPCRouter({
 				}
 
 				const postWithRelations = await tx.query.posts.findFirst({
-					where: eq(posts.id, post.id),
+					where: eq(postsTable.id, post.id),
 					with: {
 						author: {
 							columns: {
@@ -104,7 +105,7 @@ export const postRouter = createTRPCRouter({
 
 	getLatest: publicProcedure.query(async ({ ctx }) => {
 		const posts = await ctx.db.query.posts.findMany({
-			orderBy: (posts, { desc }) => [desc(posts.createdAt)],
+			orderBy: (postsTable, { desc }) => [desc(postsTable.createdAt)],
 			with: {
 				author: {
 					columns: {
@@ -140,7 +141,7 @@ export const postRouter = createTRPCRouter({
 
 	getByPostId: publicProcedure.input(z.object({ postId: z.number() })).query(async ({ ctx, input }) => {
 		const post = await ctx.db.query.posts.findFirst({
-			where: eq(posts.id, input.postId),
+			where: eq(postsTable.id, input.postId),
 			with: {
 				author: {
 					columns: {
@@ -193,7 +194,7 @@ export const postRouter = createTRPCRouter({
 
 	toggleLike: protectedProcedure.input(z.object({ postId: z.number() })).mutation(async ({ ctx, input }) => {
 		const post = await ctx.db.query.posts.findFirst({
-			where: eq(posts.id, input.postId),
+			where: eq(postsTable.id, input.postId),
 			with: {
 				author: {
 					columns: {
@@ -240,7 +241,7 @@ export const postRouter = createTRPCRouter({
 		)
 		.mutation(async ({ ctx, input }) => {
 			const post = await ctx.db.query.posts.findFirst({
-				where: eq(posts.id, input.postId),
+				where: eq(postsTable.id, input.postId),
 				with: {
 					author: {
 						columns: {
@@ -275,10 +276,10 @@ export const postRouter = createTRPCRouter({
 
 			const [comment] = await ctx.db.transaction(async (tx) => {
 				const [updated] = await tx
-					.update(posts)
-					.set({ commentCount: sql`${posts.commentCount} + 1` })
-					.where(eq(posts.id, input.postId))
-					.returning({ commentCount: posts.commentCount });
+					.update(postsTable)
+					.set({ commentCount: sql`${postsTable.commentCount} + 1` })
+					.where(eq(postsTable.id, input.postId))
+					.returning({ commentCount: postsTable.commentCount });
 
 				if (!updated) {
 					throw new TRPCError({
@@ -315,8 +316,8 @@ export const postRouter = createTRPCRouter({
 	getComments: publicProcedure.input(z.object({ postId: z.number() })).query(async ({ ctx, input }) => {
 		const [postExists] = await ctx.db
 			.select({ exists: sql`1` })
-			.from(posts)
-			.where(eq(posts.id, input.postId))
+			.from(postsTable)
+			.where(eq(postsTable.id, input.postId))
 			.limit(1);
 
 		if (!postExists) {
@@ -367,7 +368,7 @@ export const postRouter = createTRPCRouter({
 
 	repost: protectedProcedure.input(z.object({ postId: z.number() })).mutation(async ({ ctx, input }) => {
 		const post = await ctx.db.query.posts.findFirst({
-			where: eq(posts.id, input.postId),
+			where: eq(postsTable.id, input.postId),
 			with: {
 				author: {
 					columns: {
@@ -421,4 +422,59 @@ export const postRouter = createTRPCRouter({
 			});
 		}
 	}),
+
+	feed: publicProcedure
+		.input(
+			z.object({
+				limit: z.number().min(1).max(100).default(10),
+				cursor: z.number().nullish(),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			const { limit, cursor } = input;
+
+			const posts = await ctx.db.query.posts.findMany({
+				limit: limit + 1,
+				where: cursor ? sql`id < ${cursor}` : undefined,
+				orderBy: [desc(postsTable.id)],
+				with: {
+					author: {
+						columns: {
+							name: true,
+							image: true,
+							username: true,
+						},
+					},
+					postLikes: true,
+					reposts: true,
+					postComments: true,
+					bookmarks: true,
+					postHashtags: {
+						with: {
+							hashtag: true,
+						},
+					},
+				},
+			});
+
+			let nextCursor: typeof cursor = undefined;
+			if (posts.length > limit) {
+				const nextItem = posts.pop();
+				nextCursor = nextItem?.id;
+			}
+
+			return {
+				items: posts.map((post) => ({
+					...post,
+					likes: post.postLikes.length,
+					reposts: post.reposts.length,
+					commentsCount: post.postComments.length,
+					hasLiked: post.postLikes.some((like) => like.userId === ctx.session?.user?.id),
+					hasReposted: post.reposts.some((repost) => repost.userId === ctx.session?.user?.id),
+					isBookmarked: post.bookmarks.some((bookmark) => bookmark.userId === ctx.session?.user?.id),
+					hashtags: post.postHashtags.map((ph) => ph.hashtag.name),
+				})),
+				nextCursor,
+			};
+		}),
 });
