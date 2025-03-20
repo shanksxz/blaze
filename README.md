@@ -57,6 +57,7 @@ A modern, full-stack social media platform built with cutting-edge technologies.
 - `pnpm db:migrate` - Run database migrations
 - `pnpm db:studio` - Open database studio
 - `pnpm db:generate` - Generate database models
+- `./start-database.sh` - Start PostgreSQL in Docker container
 
 ## Project Structure 📁
 
@@ -75,6 +76,7 @@ blaze/
    - Node.js 20+
    - pnpm
    - PostgreSQL
+   - Docker (for local database)
 
 2. **Installation**
    ```bash
@@ -86,14 +88,20 @@ blaze/
    pnpm install
    ```
 
-3. **Environment Setup**
-   - Copy `.env.example` to `.env`
-   - Configure your environment variables:
-     - Database connection
-     - Authentication providers
-     - API keys
+3. **Database Setup**
+   ```bash
+   # start the PostgreSQL database in Docker
+   ./start-database.sh
+   ```
 
-4. **Development**
+4. **Environment Setup**
+   - copy `.env.example` to `.env`
+   - configure your environment variables:
+     - database connection
+     - authentication providers
+     - api keys
+
+5. **Development**
    ```bash
    pnpm dev
    ```
