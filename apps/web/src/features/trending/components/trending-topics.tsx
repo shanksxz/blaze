@@ -1,10 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { api } from "@/trpc/react";
 import { MoreHorizontal } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { api } from "@/trpc/react";
 
 export interface Hashtag {
 	name: string;

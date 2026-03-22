@@ -1,14 +1,14 @@
 "use client";
 
+import { Calendar, Image, Smile } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAutoResizeTextArea } from "@/hooks/use-auto-resize";
 import { authClient } from "@/server/auth/auth-client";
 import { api } from "@/trpc/react";
 import { tweetSchema } from "@/validation";
-import { Calendar, Image, Smile } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 
 const MAX_LENGTH = 280;
 

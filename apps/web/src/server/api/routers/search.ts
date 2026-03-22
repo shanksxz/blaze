@@ -1,18 +1,13 @@
 import {
 	and,
 	between,
-	bookmarks,
-	comments,
 	desc,
 	eq,
 	hashtags,
 	like,
 	or,
 	postHashtags,
-	postLikes,
-	posts,
 	posts as postsTable,
-	reposts,
 	sql,
 	users,
 } from "@repo/database";
@@ -137,7 +132,7 @@ export const searchRouter = createTRPCRouter({
 				},
 			});
 
-			let nextCursor: typeof input.cursor = undefined;
+			let nextCursor: typeof input.cursor ;
 			if (posts.length > input.limit) {
 				const nextItem = posts.pop();
 				nextCursor = nextItem?.id;

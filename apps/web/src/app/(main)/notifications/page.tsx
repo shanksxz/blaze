@@ -1,12 +1,11 @@
 "use client";
 
+import { Bell, Check, Flame, MessageCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { authClient } from "@/server/auth/auth-client";
 import { api } from "@/trpc/react";
-import { Bell, Check } from "lucide-react";
-import { Flame, MessageCircle, User } from "lucide-react";
 
 export default function NotificationsPage() {
 	const { data: session } = authClient.useSession();

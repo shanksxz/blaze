@@ -1,8 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
-	"organizeImports": {
-		"enabled": true
-	},
+	"$schema": "https://biomejs.dev/schemas/2.4.8/schema.json",
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -12,15 +9,27 @@
 				"noUselessFragments": "off"
 			},
 			"correctness": {
-				"useExhaustiveDependencies": "off"
+				"useExhaustiveDependencies": "off",
+				"noUnusedImports": "error",
+				"useHookAtTopLevel": "off"
 			},
 			"suspicious": {
 				"noExplicitAny": "off",
-        		"noArrayIndexKey": "off"
+				"noArrayIndexKey": "off",
+				"noUnknownAtRules": "off",
+				"noDocumentCookie": "off"
 			},
 			"a11y": {
-				"useKeyWithClickEvents": "warn",
-				"useFocusableInteractive": "off"
+				"useKeyWithClickEvents": "off",
+				"useFocusableInteractive": "off",
+				"noStaticElementInteractions": "off",
+				"useSemanticElements": "off"
+			},
+			"performance": {
+				"noImgElement": "off"
+			},
+			"style": {
+				"noUnusedTemplateLiteral": "error"
 			}
 		}
 	},
@@ -28,6 +37,14 @@
 		"lineWidth": 120,
 		"indentWidth": 4,
 		"enabled": true,
-		"ignore": ["node_modules/*", "*.config.*", "*.json", "tsconfig.json", ".turbo"]
+		"includes": ["!node_modules/*", "!*.config.*", "!*.json", "!tsconfig.json", "!.turbo"]
+	},
+	"javascript": {
+		"jsxRuntime": "reactClassic"
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
 	}
 }

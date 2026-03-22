@@ -1,5 +1,5 @@
-import LoadingSkeleton from "@/components/layout/loading-skeleton";
 import { Suspense } from "react";
+import LoadingSkeleton from "@/components/layout/loading-skeleton";
 import Client from "./_client";
 
 export default function Page() {

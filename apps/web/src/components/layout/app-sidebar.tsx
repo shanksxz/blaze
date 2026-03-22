@@ -1,5 +1,9 @@
 "use client";
 
+import { Bell, BookMarked, Home, LogOut, Mail, Search, Settings, TrendingUpIcon, User, X } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,10 +23,6 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/server/auth/auth-client";
-import { Bell, BookMarked, Home, LogOut, Mail, Search, Settings, TrendingUpIcon, User, X } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 const navigationItems = [
 	{ title: "Home", url: "/", icon: Home, disabled: false },

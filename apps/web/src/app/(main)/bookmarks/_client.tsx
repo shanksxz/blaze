@@ -1,12 +1,12 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
 import LoadingSkeleton from "@/components/layout/loading-skeleton";
 import { Button } from "@/components/ui/button";
 import { Post } from "@/features/post/components/post-card";
 import { usePostService } from "@/hooks/api-hooks";
 import { api } from "@/trpc/react";
-import { ChevronDown } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export default function Client() {
 	const router = useRouter();

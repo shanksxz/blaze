@@ -1,6 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import { integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
-import { hashtags, postHashtags } from "./hashtags";
+import { postHashtags } from "./hashtags";
 import { bookmarks, comments, postLikes, reposts, users } from "./index";
 
 export const posts = pgTable("posts", {

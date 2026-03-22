@@ -1,8 +1,8 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import type { Context } from "@/server/api/trpc";
 import { and, eq, gt, inArray, notifications, sql, users } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import type { Context } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 const notificationDataSchema = z.object({
 	type: z.enum(["like", "comment", "follow", "mention", "repost"]),

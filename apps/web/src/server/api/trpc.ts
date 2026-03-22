@@ -7,12 +7,12 @@
  * need to use are documented accordingly near the end.
  */
 
-import { auth } from "@/server/auth/auth";
 import { db } from "@repo/database";
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import { headers } from "next/headers";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { auth } from "@/server/auth/auth";
 // import { db } from '~/server/db';
 
 /**

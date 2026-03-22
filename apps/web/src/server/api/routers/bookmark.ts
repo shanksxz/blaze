@@ -1,6 +1,6 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { and, bookmarks as bookmarksTable, desc, eq, sql } from "@repo/database";
 import { z } from "zod";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const bookmarkRouter = createTRPCRouter({
 	toggle: protectedProcedure.input(z.object({ postId: z.number() })).mutation(async ({ ctx, input }) => {
@@ -67,7 +67,7 @@ export const bookmarkRouter = createTRPCRouter({
 				},
 			});
 
-			let nextCursor: typeof cursor = undefined;
+			let nextCursor: typeof cursor ;
 			if (bookmarks.length > limit) {
 				const nextItem = bookmarks.pop();
 				nextCursor = nextItem?.id;

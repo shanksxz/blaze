@@ -1,14 +1,14 @@
 "use client";
 
+import { SearchIcon, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDebounce } from "@/hooks/use-debounce";
 import { api } from "@/trpc/react";
-import { SearchIcon, X } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export function Search() {
 	const router = useRouter();
