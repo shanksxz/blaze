@@ -17,14 +17,14 @@
   },
   "dependencies": {
     "drizzle-orm": "^0.38.3",
-    "pg": "^8.13.1"
+    "pg": "^8.20.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@repo/typescript-config": "workspace:*",
-    "@types/pg": "^8.11.10",
-    "dotenv-cli": "^8.0.0",
+    "@types/pg": "^8.20.0",
+    "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.30.1",
-    "tsx": "^4.19.2"
+    "tsx": "^4.21.0"
   }
 }
