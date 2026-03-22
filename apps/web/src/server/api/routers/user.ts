@@ -1,7 +1,7 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { and, comments, desc, eq, follows, postLikes, posts as postsTable, reposts, sql, users } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { createFollowNotification } from "../routers/notifications";
 
 export const userRouter = createTRPCRouter({
@@ -108,7 +108,7 @@ export const userRouter = createTRPCRouter({
 				.orderBy(desc(postsTable.id))
 				.limit(limit + 1);
 
-			let nextCursor: typeof cursor = undefined;
+			let nextCursor: typeof cursor ;
 			if (result.length > limit) {
 				const nextItem = result.pop();
 				nextCursor = nextItem?.id;

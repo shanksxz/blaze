@@ -1,5 +1,10 @@
 "use client";
 
+import { format } from "date-fns";
+import { CalendarIcon, Search, } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -10,11 +15,6 @@ import { usePostService } from "@/hooks/api-hooks";
 import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import { format } from "date-fns";
-import { Calendar, CalendarIcon, Search, X } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import type { DateRange } from "react-day-picker";
 
 export default function SearchInterface() {
 	const [searchQuery, setSearchQuery] = useState("");

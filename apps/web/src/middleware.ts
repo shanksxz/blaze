@@ -1,6 +1,6 @@
-import type { Session } from "@/server/auth/auth";
 import { betterFetch } from "@better-fetch/fetch";
 import { type NextRequest, NextResponse } from "next/server";
+import type { Session } from "@/server/auth/auth";
 
 const authRoutes = ["/signin"];
 const protectedRoutes = ["/bookmarks", "/settings", "/dashboard", "/notifications"];

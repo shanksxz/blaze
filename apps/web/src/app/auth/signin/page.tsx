@@ -1,11 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { authClient } from "@/server/auth/auth-client";
 import { Github } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { authClient } from "@/server/auth/auth-client";
 
 export default function Signin() {
 	const [pendingGithub, setPendingGithub] = useState(false);

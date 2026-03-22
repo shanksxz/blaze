@@ -1,6 +1,6 @@
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
-import { and, desc, eq, hashtags, postHashtags, posts, sql } from "@repo/database";
+import { eq, hashtags, postHashtags, posts, sql } from "@repo/database";
 import { z } from "zod";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 
 export const hashtagRouter = createTRPCRouter({
 	getTrending: publicProcedure.input(z.object({ limit: z.number().optional() })).query(async ({ ctx, input }) => {

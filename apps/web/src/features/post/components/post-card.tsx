@@ -1,5 +1,7 @@
 "use client";
 
+import { Bookmark, Flame, Mail, Repeat2, Share } from "lucide-react";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -7,8 +9,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { cn } from "@/lib/utils";
 import { authClient } from "@/server/auth/auth-client";
 import type { RouterOutputs } from "@/trpc/react";
-import { Bookmark, Flame, Mail, Repeat2, Share } from "lucide-react";
-import Link from "next/link";
 
 type Post = RouterOutputs["post"]["getLatest"][number];
 

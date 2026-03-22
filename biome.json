@@ -9,15 +9,27 @@
 				"noUselessFragments": "off"
 			},
 			"correctness": {
-				"useExhaustiveDependencies": "off"
+				"useExhaustiveDependencies": "off",
+				"noUnusedImports": "error",
+				"useHookAtTopLevel": "off"
 			},
 			"suspicious": {
 				"noExplicitAny": "off",
-				"noArrayIndexKey": "off"
+				"noArrayIndexKey": "off",
+				"noUnknownAtRules": "off",
+				"noDocumentCookie": "off"
 			},
 			"a11y": {
-				"useKeyWithClickEvents": "warn",
-				"useFocusableInteractive": "off"
+				"useKeyWithClickEvents": "off",
+				"useFocusableInteractive": "off",
+				"noStaticElementInteractions": "off",
+				"useSemanticElements": "off"
+			},
+			"performance": {
+				"noImgElement": "off"
+			},
+			"style": {
+				"noUnusedTemplateLiteral": "error"
 			}
 		}
 	},
@@ -26,5 +38,13 @@
 		"indentWidth": 4,
 		"enabled": true,
 		"includes": ["!node_modules/*", "!*.config.*", "!*.json", "!tsconfig.json", "!.turbo"]
+	},
+	"javascript": {
+		"jsxRuntime": "reactClassic"
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
 	}
 }

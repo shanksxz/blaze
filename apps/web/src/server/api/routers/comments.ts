@@ -1,7 +1,7 @@
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { comments, eq, getISOFormatDateQuery, posts, sql } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 
 export const commentRouter = createTRPCRouter({
 	createChildComment: protectedProcedure

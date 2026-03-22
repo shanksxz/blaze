@@ -29,7 +29,7 @@ import ComingSoon from "@/components/layout/coming-soon";
 // }
 
 export default async function Page({
-	searchParams,
+	searchParams: _searchParams,
 }: {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {

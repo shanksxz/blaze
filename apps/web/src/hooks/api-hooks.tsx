@@ -1,10 +1,10 @@
 //TODO: implementation of these hooks might be wrong or can be improved
 "use client";
 
-import type { RouterOutputs } from "@/trpc/react";
-import { api } from "@/trpc/react";
 import { produce } from "immer";
 import { toast } from "sonner";
+import type { RouterOutputs } from "@/trpc/react";
+import { api } from "@/trpc/react";
 
 type PostType = RouterOutputs["post"]["getLatest"][number];
 
@@ -250,7 +250,7 @@ export function useRepostPost() {
 
 			return prevData;
 		},
-		onError: (err, { postId }, context) => {
+		onError: (_err, { postId }, context) => {
 			if (context?.post) {
 				utils.post.getByPostId.setData({ postId }, context.post);
 			}

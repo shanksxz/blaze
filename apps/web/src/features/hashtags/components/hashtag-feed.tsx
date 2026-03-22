@@ -1,9 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Post } from "@/features/post/components/post-card";
 import { usePostService } from "@/hooks/api-hooks";
 import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
 
 interface HashtagFeedProps {
 	hashtag: string;

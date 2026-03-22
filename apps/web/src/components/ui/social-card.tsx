@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Bookmark, Heart, Link as LinkIcon, MessageCircle, MoreHorizontal, Share2 } from "lucide-react";
+import { Bookmark, Heart, MessageCircle, MoreHorizontal, Share2 } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface SocialCardProps {
 	author?: {

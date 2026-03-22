@@ -1,14 +1,14 @@
 "use client";
 
+import { ChevronDown, Heart, MessageCircle, Repeat2 } from "lucide-react";
+import Link from "next/link";
 import LoadingSkeleton from "@/components/layout/loading-skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { api } from "@/trpc/react";
-import { ChevronDown, Heart, MessageCircle, Repeat2 } from "lucide-react";
-import Link from "next/link";
 
-export default function PostList({ userId, context }: { userId: string; context: "posts" | "likes" }) {
+export default function PostList({ userId, context: _context }: { userId: string; context: "posts" | "likes" }) {
 	const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = api.user.posts.useInfiniteQuery(
 		{
 			userId,

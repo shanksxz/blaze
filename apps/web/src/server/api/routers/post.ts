@@ -1,4 +1,3 @@
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import {
 	and,
 	comments,
@@ -17,6 +16,7 @@ import {
 } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import {
 	createCommentNotification,
 	createLikeNotification,
@@ -327,7 +327,7 @@ export const postRouter = createTRPCRouter({
 			});
 		}
 
-		const [count] = await ctx.db
+		const [_count] = await ctx.db
 			.select({ count: countDistinct(comments.id) })
 			.from(comments)
 			.where(and(eq(comments.postId, input.postId), isNull(comments.parentCommentId)));
@@ -457,7 +457,7 @@ export const postRouter = createTRPCRouter({
 				},
 			});
 
-			let nextCursor: typeof cursor = undefined;
+			let nextCursor: typeof cursor ;
 			if (posts.length > limit) {
 				const nextItem = posts.pop();
 				nextCursor = nextItem?.id;

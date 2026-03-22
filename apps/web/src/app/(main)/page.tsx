@@ -1,7 +1,7 @@
+import { Suspense } from "react";
 import LoadingSkeleton from "@/components/layout/loading-skeleton";
 import Feed from "@/features/feed/components/feed";
 import Tweet from "@/features/feed/components/tweet";
-import { Suspense } from "react";
 
 export default async function Page() {
 	return (

@@ -1,5 +1,9 @@
 "use client";
 
+import { Moon, Sun } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
+import React from "react";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -11,10 +15,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
-import { usePathname } from "next/navigation";
-import React from "react";
 
 export default function AppHeader() {
 	const { theme, setTheme } = useTheme();
@@ -37,7 +37,7 @@ export default function AppHeader() {
 								<BreadcrumbItem>
 									<BreadcrumbLink href="/">Home</BreadcrumbLink>
 								</BreadcrumbItem>
-								{pathSegments.map((segment, index) => (
+								{pathSegments.map((segment, _index) => (
 									<React.Fragment key={segment}>
 										<BreadcrumbSeparator />
 										<BreadcrumbItem>
