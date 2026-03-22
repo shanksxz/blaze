@@ -42,6 +42,13 @@
     },
     "db:generate": {
       "cache": false
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
     }
   }
 }

@@ -27,6 +27,9 @@ out/
 build
 dist
 
+# Ai
+.opencode
+
 
 # Debug
 npm-debug.log*
