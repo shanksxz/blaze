@@ -16,7 +16,7 @@
     "db:generate": "pnpm with-env drizzle-kit generate"
   },
   "dependencies": {
-    "drizzle-orm": "^0.38.3",
+    "drizzle-orm": "^0.45.1",
     "pg": "^8.20.0"
   },
   "devDependencies": {
@@ -24,7 +24,7 @@
     "@repo/typescript-config": "workspace:*",
     "@types/pg": "^8.20.0",
     "dotenv-cli": "^11.0.0",
-    "drizzle-kit": "^0.30.1",
+    "drizzle-kit": "^0.31.10",
     "tsx": "^4.21.0"
   }
 }
