@@ -8,6 +8,8 @@
   "scripts": {
     "format-and-lint": "biome check ./src",
     "format-and-lint:fix": "biome check --write ./src",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
     "with-env": "dotenv -e ../../.env --",
     "db:migrate": "pnpm with-env tsx scripts/migration.ts",
     "db:studio": "pnpm with-env drizzle-kit studio",

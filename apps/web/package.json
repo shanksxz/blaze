@@ -9,9 +9,10 @@
     "start": "pnpm with-env next start",
     "format-and-lint": "biome check ./src",
     "format-and-lint:fix": "biome check --write ./src",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .next",
     "with-env": "dotenv -e ../../.env --",
-    "preview": "pnpm with-env next build && pnpm with-env next start",
-    "typecheck": "tsc --noEmit"
+    "preview": "pnpm with-env next build && pnpm with-env next start"
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.12",
@@ -37,7 +38,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
-    "date-fns": "^4.1.0",
+    "date-fns": "^3.6.0",
     "framer-motion": "^12.0.5",
     "immer": "^10.1.1",
     "lucide-react": "^0.468.0",
