@@ -1,8 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
-	"organizeImports": {
-		"enabled": true
-	},
+	"$schema": "https://biomejs.dev/schemas/2.4.8/schema.json",
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -16,7 +13,7 @@
 			},
 			"suspicious": {
 				"noExplicitAny": "off",
-        		"noArrayIndexKey": "off"
+				"noArrayIndexKey": "off"
 			},
 			"a11y": {
 				"useKeyWithClickEvents": "warn",
@@ -28,6 +25,6 @@
 		"lineWidth": 120,
 		"indentWidth": 4,
 		"enabled": true,
-		"ignore": ["node_modules/*", "*.config.*", "*.json", "tsconfig.json", ".turbo"]
+		"includes": ["!node_modules/*", "!*.config.*", "!*.json", "!tsconfig.json", "!.turbo"]
 	}
 }
